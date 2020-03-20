@@ -1,0 +1,15 @@
+FROM devops/phpcli:7.4.3
+
+ARG WORKDIRECTORY=/app
+ARG HOST_USER_UID=1000
+ARG HOST_USER_GID=1000
+ARG HOST_USER_NAME=www
+ARG HOST_GROUP_NAME=www
+
+COPY --from=spiralscout/roadrunner:1.6.4 /usr/bin/rr /usr/local/bin/rr
+
+VOLUME ["${WORKDIRECTORY}"]
+WORKDIR ${WORKDIRECTORY}
+USER ${HOST_USER_NAME}
+
+ENTRYPOINT ["/usr/local/bin/rr", "serve", "-v", "-d", "-c", "/app/roadrunner.yaml"]

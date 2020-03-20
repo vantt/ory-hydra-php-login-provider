@@ -1,0 +1,28 @@
+# https://github.com/baldinof/roadrunner-bundle
+baldinof_road_runner:
+
+    # If you want to reset just some services between requests (database connections),
+    # you can create service reset class by implementing Symfony\Contracts\Service\ResetInterface.
+    should_reboot_kernel: false
+
+    default_integrations: true
+
+#    middlewares:
+#        - App\Middleware\YourMiddleware
+
+
+services:
+    # communicate through unix-socket
+    Spiral\Goridge\RelayInterface:
+        class: Spiral\Goridge\SocketRelay
+        arguments:
+            - '%kernel.project_dir%/var/roadrunner.sock'
+            - null
+            - !php/const Spiral\Goridge\SocketRelay::SOCK_UNIX
+
+    #    communicate through tcp
+    #    Spiral\Goridge\RelayInterface:
+    #        class: 'Spiral\Goridge\SocketRelay'
+    #        arguments:
+    #            - localhost
+    #            - 7000

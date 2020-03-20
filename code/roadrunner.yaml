@@ -1,0 +1,27 @@
+http:
+  address: "0.0.0.0:8080"
+
+  uploads:
+    forbid: [".php", ".exe", ".bat"]
+
+  workers:
+    command: "php bin/console baldinof:roadrunner:worker"
+    relay: "unix://var/roadrunner.sock"
+
+
+# reload can reset rr servers when files change
+reload:
+  # refresh interval (default 1s)
+  interval: 1s
+
+  # file extensions to watch, defaults to [.php]
+  patterns: [".php", ".yaml", ".yml"]
+
+  # list of services to watch
+  services:
+    http:
+      # list of dirs, "" root
+      dirs: [""]
+
+      # include sub directories
+      recursive: true
