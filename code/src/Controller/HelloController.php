@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 class HelloController extends AbstractController {
     /**
@@ -15,6 +13,6 @@ class HelloController extends AbstractController {
      * @return Response
      */
     final public function hello(): Response {
-        return new JsonResponse(['hello' => 'hello12']);
+        return new JsonResponse(['saying' => 'Hello World!']);
     }
 }

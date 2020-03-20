@@ -2,7 +2,7 @@ version: '3'
 
 services:
   roadrunner:
-    build: docker/roadrunner
+    build: ./build
     container_name: "roadrunner"
     ports:
       - 8080:8080
