@@ -1,6 +1,6 @@
-FROM php:7.4.3-cli-alpine
+FROM php:7.4.4-cli-alpine
 
-ARG PHP_VERSION=7.4.3
+ARG PHP_VERSION=7.4.4
 
 ARG WORKDIRECTORY=/app
 

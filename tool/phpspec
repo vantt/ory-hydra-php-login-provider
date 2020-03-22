@@ -1,0 +1,21 @@
+#!/bin/bash
+
+PHPSPEC_IMAGE=vantt/phpspec:6.1.1
+
+phpspec () {
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+        --rm \
+        --volume $(pwd):/app \
+        --volume $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
+        --volume /etc/passwd:/etc/passwd:ro \
+        --volume /etc/group:/etc/group:ro \
+        --user $(id -u):$(id -g) \
+        --env SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+        ${PHPSPEC_IMAGE} "$@"
+}
+
+phpspec "$@"

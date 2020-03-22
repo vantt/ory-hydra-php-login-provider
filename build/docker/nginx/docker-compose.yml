@@ -9,15 +9,15 @@ networks:
 
 services:
     php:
-        #build: http://git.anphabe.net/devops/docker-phpfpm.git
-        image: 990863991647.dkr.ecr.us-west-2.amazonaws.com/devops/phpfpm:7.4.2.2
+        #build: http://git.c
+        image: vantt/phpfpm:7.4.4
         volumes:
             - ${PROJECT_FOLDER}:/app
     nginx:
-        #build: http://git.anphabe.net/devops/docker-nginx.git
-        image: 990863991647.dkr.ecr.us-west-2.amazonaws.com/devops/nginx:v1.1.1
+        #build: http://git.c
+        image: vantt/nginx:v1.1.1
         ports:
-        - 8080:8080
+            - 8080:8080
         depends_on:
             - php
         volumes:
@@ -26,4 +26,12 @@ services:
         networks:
             proxy: {}
             default: {}
-
+    dumpserver:
+        image: vantt/phpcli:7.4.4
+        container_name: "dumpserver"
+        volumes:
+            - ${PROJECT_FOLDER}:/app
+        command: "php bin/console server:dump"
+        networks:
+            proxy: {}
+            default: {}
