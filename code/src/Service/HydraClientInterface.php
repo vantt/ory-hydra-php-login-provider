@@ -3,7 +3,7 @@
 namespace App\Service;
 
 interface HydraClientInterface {
-    public function fetchLogin($challenge);
-    public function acceptLogin($challenge);
-    public function rejectLogin($challenge);
+    public function fetchLogin(string $challenge);
+    public function acceptLogin(string $challenge);
+    public function rejectLogin(string $challenge);
 }
