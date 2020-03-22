@@ -11,4 +11,22 @@
       </tool>
     </test_tools>
   </component>
+  <component name="PhpTestFrameworkVersionCache">
+    <tools_cache>
+      <tool tool_name="PHPSpec">
+        <cache>
+          <versions>
+            <info id="interpreter-c496ebb5-67c9-4f9b-9c8b-6b8a5ee7aa88" version="6.1.1" />
+          </versions>
+        </cache>
+      </tool>
+      <tool tool_name="PHPUnit">
+        <cache>
+          <versions>
+            <info id="interpreter-9881d050-5034-4bb5-9671-34da19d3d242" version="9.0.1" />
+          </versions>
+        </cache>
+      </tool>
+    </tools_cache>
+  </component>
 </project>
