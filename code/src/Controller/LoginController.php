@@ -3,13 +3,18 @@
 namespace App\Controller;
 
 use App\Service\HydraClient;
+use Nyholm\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 
 class LoginController extends AbstractController {
+
     /**
      * @var HydraClient
      */
@@ -31,13 +36,20 @@ class LoginController extends AbstractController {
      *
      * @return Response
      */
-    final public function login(AuthenticationUtils $authenticationUtils): Response {
-        dump($this->hydra);exit;
+    final public function login(ServerRequestInterface $request): Response {
+        $params          = $request->getQueryParams();
+        $login_challenge = $params['login_challenge'] ?? null;
+        $loginInfo       = $this->hydra->fetchLogin($login_challenge);
+
+        return new JsonResponse($loginInfo);
+    }
+
+    private function fetchLoginInfo(string $loginChallenge) {
 
     }
 
 
-    private function doLogin() {
+    private function doLogin(string $loginChallange) {
 
     }
 
