@@ -63,14 +63,12 @@ docker run -d \
   oryd/hydra:v1.3.2 serve all --dangerous-force-http 
 
 
-  /// create client
- /// create client
-  docker run --rm -it \
+/// create client
+docker run --rm -it \
   -e HYDRA_ADMIN_URL=http://YOUR_EXPOSED_IP:4445 \
-  --network hydraguide \
-  oryd/hydra:v1.3.2 \
+  oryd/hydra:v1.3.2-alpine \
   clients create --skip-tls-verify \
-    --id client2 \
+    --id client1 \
     --secret some-secret \
     --grant-types authorization_code,refresh_token,client_credentials,implicit \
     --response-types token,code,id_token \
@@ -78,19 +76,28 @@ docker run -d \
     --callbacks http://127.0.0.1:9010/callback
 
 
- /// test client 
-  docker run --rm -it \
-    --network hydraguide \
+/// test client
+docker run --rm -it \
     -p 9010:9010 \
-    oryd/hydra:v1.3.2 \
+    oryd/hydra:v1.3.2-alpine \
     token user --skip-tls-verify \
       --port 9010 \
       --auth-url http://192.168.5.119:4444/oauth2/auth \
       --token-url http://192.168.5.119:4444/oauth2/token \
-      --client-id client4 \
+      --client-id client1 \
       --client-secret some-secret \
       --scope openid,offline,photos.read
-    
+
+docker run --rm -it \
+    -p 9010:9010 \
+    oryd/hydra:v1.3.2-alpine \
+    token user --skip-tls-verify \
+      --port 9010 \
+      --endpoint http://192.168.5.119:4444 \
+      --client-id client1 \
+      --client-secret some-secret \
+      --scope openid,offline,photos.read
+
 ## Create Hydra Client
 `
 docker-compose -f quickstart.yml exec hydra \

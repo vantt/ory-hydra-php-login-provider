@@ -3,12 +3,12 @@
 namespace spec\App\Controller;
 
 use App\Controller\LoginController;
-use App\Service\HydraClient;
+use App\Service\HydraHttpClient;
 use PhpSpec\ObjectBehavior;
 
 class LoginControllerSpec extends ObjectBehavior
 {
-    function let(HydraClient $hydraClient) {
+    function let(HydraHttpClient $hydraClient) {
         $this->beConstructedWith($hydraClient);
     }
 

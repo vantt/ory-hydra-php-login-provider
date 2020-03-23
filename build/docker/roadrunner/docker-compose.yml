@@ -17,13 +17,12 @@ networks:
         driver: bridge
     proxy:
         external: true
-        name: hydraguide
+        name: https-proxy
 
 services:
     roadrunner:
         #build: ./build
-        image: vantt/roadrunner:1.6.4
-        container_name: "roadrunner"
+        image: devops/roadrunner:1.6.4
         ports:
             - 8080:8080
         volumes:
@@ -33,8 +32,9 @@ services:
             default: {}
 
     dumpserver:
-        image: vantt/phpcli:7.4.4
-        container_name: "dumpserver"
+        image: devops/phpcli:7.4.4
+        ports:
+            - 9912:9912
         volumes:
             - ${PROJECT_FOLDER}:/app
         command: "php bin/console server:dump"
@@ -42,8 +42,25 @@ services:
             proxy: {}
             default: {}
 
+    hydra-mysqld:
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+    hydra-migrate:
+        image: oryd/hydra:v1.3.2-alpine
+        environment:
+            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
+        command:
+            migrate sql -e --yes
+        restart: on-failure
+
     hydra:
-        image: oryd/hydra:latest
+        image: oryd/hydra:v1.3.2-alpine
+        depends_on:
+            - hydra-migrate
         ports:
             - "4444:4444" # Public port
             - "4445:4445" # Admin port
@@ -51,16 +68,17 @@ services:
         command:
             serve all --dangerous-force-http # turn off https
         environment:
-            - URLS_SELF_ISSUER=http://127.0.0.1:4444
-            - URLS_CONSENT=http://127.0.0.1:8080/consent
-            - URLS_LOGIN=http://127.0.0.1:8080/login
-            - URLS_LOGOUT=http://127.0.0.1:8080/logout
-            - DSN=memory
+            - URLS_SELF_ISSUER=http://${MYIP}:4444
+            - URLS_CONSENT=http://${MYIP}:8080/consent
+            - URLS_LOGIN=http://${MYIP}:8080/login
+            - URLS_LOGOUT=http://${MYIP}:8080/logout
+            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
+            # - DSN=memory
             - SECRETS_SYSTEM=youReallyNeedToChangeThis
-            - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
-            - OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
             - LOG_LEVEL=debug
             - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
+            # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
+            #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
         restart: unless-stopped
         networks:
             proxy: {}

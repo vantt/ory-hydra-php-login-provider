@@ -2,7 +2,7 @@
 
 namespace spec\App\Service;
 
-use App\Service\HydraClient;
+use App\Service\HydraHttpClient;
 use App\Service\HydraClientInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -19,7 +19,7 @@ class HydraClientSpec extends ObjectBehavior {
     }
 
     function it_is_initializable() {
-        $this->shouldHaveType(HydraClient::class);
+        $this->shouldHaveType(HydraHttpClient::class);
         $this->shouldBeAnInstanceOf(HydraClientInterface::class);
     }
 

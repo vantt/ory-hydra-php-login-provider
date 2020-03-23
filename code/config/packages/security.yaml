@@ -2,13 +2,39 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         users_in_memory: { memory: null }
+        drupal7:
+            # this is an Entity so we dont need a UserProvider, entity manager will handle this
+            entity:
+                class: App\Entity\Drupal7User
+                property: name
+    encoders:
+        App\Entity\Drupal7User:
+            id: App\Security\Drupal7Encoder
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: lazy
-            provider: users_in_memory
+            provider: drupal7
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+                invalidate_session: true
+                delete_cookies: ~
+
+                # target: app_any_route
+
+            #            remember_me:
+            #                always_remember_me: true
+            #                secret:   '%kernel.secret%'
+            #                lifetime: 604800 # 1 week in seconds
+            #                path:  /
+            #                domain: 'aaaa'
+            #                token_provider: 'Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider'
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -19,5 +45,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # - { path: ^/consent, roles: IS_AUTHENTICATED_REMEMBERED }
+        # - { path: ^/authorize, roles: IS_AUTHENTICATED_APROVED }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
+
