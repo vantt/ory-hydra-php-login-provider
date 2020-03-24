@@ -8,14 +8,14 @@ use PhpSpec\ObjectBehavior;
 
 class LoginControllerSpec extends ObjectBehavior
 {
-    function let(HydraHttpClient $hydraClient) {
-        $this->beConstructedWith($hydraClient);
-    }
-
-    function it_is_initializable()
-    {
-        $this->shouldHaveType(LoginController::class);
-    }
+//    function let(HydraHttpClient $hydraClient) {
+//        $this->beConstructedWith($hydraClient);
+//    }
+//
+//    function it_is_initializable()
+//    {
+//        $this->shouldHaveType(LoginController::class);
+//    }
 
 
 }

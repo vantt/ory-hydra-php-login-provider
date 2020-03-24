@@ -28,25 +28,25 @@ class HydraHttpClient implements HydraClientInterface {
     /**
      * @var string
      */
-    private $hydraEndPoint;
+    private $hydraAdminEndPoint;
 
     /**
      * LoginController constructor.
      *
-     * @param string                        $hydraEndPoint
+     * @param string                        $hydraAdminEndPoint
      * @param ClientInterface               $httpClient
      * @param ServerRequestFactoryInterface $requestFactory
      * @param UriFactoryInterface           $uriFactory
      */
-    public function __construct(string $hydraEndPoint,
+    public function __construct(string $hydraAdminEndPoint,
                                 ClientInterface $httpClient,
                                 ServerRequestFactoryInterface $requestFactory,
                                 UriFactoryInterface $uriFactory) {
 
-        $this->hydraEndPoint  = $hydraEndPoint;
-        $this->httpClient     = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->uriFactory     = $uriFactory;
+        $this->hydraAdminEndPoint = $hydraAdminEndPoint;
+        $this->httpClient         = $httpClient;
+        $this->requestFactory     = $requestFactory;
+        $this->uriFactory         = $uriFactory;
     }
 
     /**
@@ -79,7 +79,7 @@ class HydraHttpClient implements HydraClientInterface {
      */
     private function createFetchLoginRequest(string $challenge): RequestInterface {
 
-        $uri = $this->uriFactory->createUri($this->hydraEndPoint);
+        $uri = $this->uriFactory->createUri($this->hydraAdminEndPoint);
         $uri = $uri->withPath('/oauth2/auth/requests/login')
                    ->withQuery(http_build_query(['login_challenge' => $challenge]));
 

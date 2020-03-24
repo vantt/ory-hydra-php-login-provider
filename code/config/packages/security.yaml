@@ -18,6 +18,7 @@ security:
         main:
             anonymous: lazy
             provider: drupal7
+            stateless: true # disable storing user in session
             guard:
                 authenticators:
                     - App\Security\LoginFormAuthenticator

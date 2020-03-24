@@ -36,19 +36,19 @@ class HydraLogin {
     }
 
     // https://github.com/ory/hydra-login-consent-node/blob/master/routes/login.js
-    final public function startLogin(string $challenge): self {
+    final public function startLogin(string $challenge): LoginRequest {
         $this->isSkip = false;
 
         if (!$this->isValidLoginRequest($challenge)) {
             if ($this->fetchLogin($challenge))  {
-                return $this;
+                return $this->login_request;
             }
             else {
                 // @todo: throw new Exception
             }
         }
 
-        return $this;
+        return $this->login_request;
     }
 
     private function fetchLogin($challenge): bool {
