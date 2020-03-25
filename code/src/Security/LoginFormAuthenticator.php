@@ -29,8 +29,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator {
 
     private $route;
 
-    public function __construct(EntityManagerInterface $entityManager, EncoderFactoryInterface $encoderFactory, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager) {
-        $this->entityManager    = $entityManager;
+    public function __construct(EncoderFactoryInterface $encoderFactory, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager) {
         $this->encoderFactory   = $encoderFactory;
         $this->urlGenerator     = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
@@ -38,6 +37,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator {
     }
 
     public function supports(Request $request) {
+        return false;
         $route       = $request->attributes->get('_route');
         $isPost      = $request->isMethod('POST');
         $this->route = $route;
