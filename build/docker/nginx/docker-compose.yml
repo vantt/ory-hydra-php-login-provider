@@ -10,12 +10,12 @@ networks:
 services:
     php:
         #build: http://git.c
-        image: vantt/phpfpm:7.4.4
+        image: devops/phpfpm:7.4.4
         volumes:
             - ${PROJECT_FOLDER}:/app
     nginx:
         #build: http://git.c
-        image: vantt/nginx:v1.1.1
+        image: devops/nginx:1.17.9
         ports:
             - 8080:8080
         depends_on:
@@ -27,8 +27,9 @@ services:
             proxy: {}
             default: {}
     dumpserver:
-        image: vantt/phpcli:7.4.4
-        container_name: "dumpserver"
+        image: devops/phpcli:7.4.4
+        ports:
+            - 9912:9912
         volumes:
             - ${PROJECT_FOLDER}:/app
         command: "php bin/console server:dump"
