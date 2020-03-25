@@ -7,6 +7,7 @@ security:
             entity:
                 class: App\Entity\Drupal7User
                 property: name
+
     encoders:
         App\Entity\Drupal7User:
             id: App\Security\Drupal7Encoder
@@ -15,10 +16,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        # https://symfony.com/doc/current/components/security/authentication.html
+        # https://github.com/knpuniversity/oauth2-client-bundle#authenticating-with-guard
+        # https://github.com/symfony/symfony/blob/5.0/src/Symfony/Component/Security/Core/Authentication/AuthenticationProviderManager.php
+        # Symfony/Component/Security/Core/Authentication/Provider/DaoAuthenticationProvider
         main:
             anonymous: lazy
             provider: drupal7
-            stateless: true # disable storing user in session
+            stateless: false # disable storing user in session
             guard:
                 authenticators:
                     - App\Security\LoginFormAuthenticator
@@ -46,8 +51,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        # - { path: ^/consent, roles: IS_AUTHENTICATED_REMEMBERED }
+        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        #- { path: ^/consent, roles: IS_AUTHENTICATED_REMEMBERED }
         # - { path: ^/authorize, roles: IS_AUTHENTICATED_APROVED }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

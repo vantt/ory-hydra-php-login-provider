@@ -13,11 +13,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class Drupal7IdentityProvider implements IdentityProviderInterface {
 
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var EncoderFactoryInterface
      */
     private $encoderFactory;
@@ -33,30 +28,48 @@ class Drupal7IdentityProvider implements IdentityProviderInterface {
     }
 
     /**
-     * @param array $credentials
+     * @param array $input
      *
      * @return bool
      */
-    final public function verify(array $credentials): bool {
-        if ($user = $this->getUser($credentials)) {
+    final public function verify(array $input): bool {
+        $credentials = $this->getCredentials($input);
+
+        if ($user = $this->getUser($credentials, $this->userProvider)) {
             return $this->checkCredentials($credentials, $user);
         }
 
         return false;
     }
 
+    final public function getCredentials(array $input): array {
+        return [
+          'username' => $input['username'] ?? null,
+          'password' => $input['password'] ?? null,
+        ];
+    }
+
     /**
-     * @param mixed $credentials
+     * @param mixed                 $credentials
+     *
+     * @param UserProviderInterface $userProvider
      *
      * @return UserInterface|null
      */
-    final public function getUser(array $credentials): UserInterface {
+    final public function getUser(array $credentials, ?UserProviderInterface $userProvider): UserInterface {
+        if (empty($credentials['username'])) {
+            throw new CustomUserMessageAuthenticationException('Name could not be empty.');
+        }
 
-        $user = $this->userProvider->loadUserByUsername($credentials['username']);
+        if (null === $userProvider) {
+            $user = $this->userProvider->loadUserByUsername($credentials['username']);
+        }
+        else {
+            $user = $userProvider->loadUserByUsername($credentials['username']);
+        }
 
         if (!$user) {
-            // fail authentication with a custom error
-            throw new CustomUserMessageAuthenticationException('Name could not be found.');
+            throw new CustomUserMessageAuthenticationException(sprintf('User %s could not be found.', $credentials['username']));
         }
 
         return $user;
