@@ -10,7 +10,7 @@ security:
 
     encoders:
         App\Entity\Drupal7User:
-            id: App\Security\Drupal7Encoder
+            id: App\Security\Drupal7PasswordEncoder
 
     firewalls:
         dev:
