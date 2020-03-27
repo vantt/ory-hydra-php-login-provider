@@ -1,0 +1,52 @@
+#!/bin/bash
+
+DOCKER_IMAGE=devops/composer:1.10.1
+
+composer () {
+    CACHE_FOLDER=~/.composer
+
+    if [[ ! -d $CACHE_FOLDER ]]; then
+        mkdir -p $CACHE_FOLDER/cache;
+    fi
+
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+        --rm \
+        --volume $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
+        --volume $CACHE_FOLDER:/composer_cache \
+        --volume $(pwd):/app \
+        --volume /etc/passwd:/etc/passwd:ro \
+        --volume /etc/group:/etc/group:ro \
+        --user $(id -u):$(id -g) \
+        --env SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+        $DOCKER_IMAGE "$@" --prefer-source --verbose --ignore-platform-reqs
+}
+
+composer2 () {
+    CACHE_FOLDER=~/.composer
+
+    if [[ ! -d $CACHE_FOLDER ]]; then
+        mkdir -p $CACHE_FOLDER/cache;
+    fi
+
+    tty=
+    tty -s && tty=--tty
+    docker run \
+        $tty \
+        --interactive \
+        --rm \
+        --volume $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
+        --volume $CACHE_FOLDER:/composer_cache \
+        --volume $(pwd):/app \
+        --volume /etc/passwd:/etc/passwd:ro \
+        --volume /etc/group:/etc/group:ro \
+        --user $(id -u):$(id -g) \
+        --env SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+        $DOCKER_IMAGE "$@"  --verbose
+}
+
+#source "$(dirname "$(realpath "$0")")"/rundocker
+composer "$@"
