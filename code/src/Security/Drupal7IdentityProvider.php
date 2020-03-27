@@ -69,7 +69,7 @@ class Drupal7IdentityProvider implements IdentityProviderInterface {
         }
 
         if (!$user) {
-            throw new CustomUserMessageAuthenticationException(sprintf('User %s could not be found.', $credentials['username']));
+            throw new CustomUserMessageAuthenticationException(sprintf('User %s not found.', $credentials['username']));
         }
 
         return $user;

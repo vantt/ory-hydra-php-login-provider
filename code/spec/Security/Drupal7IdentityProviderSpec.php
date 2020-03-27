@@ -3,32 +3,42 @@
 namespace spec\App\Security;
 
 use App\Entity\Drupal7User;
-use App\Security\Drupal7Encoder;
+use App\Security\Drupal7PasswordEncoder;
 use App\Security\Drupal7IdentityProvider;
 use App\Security\IdentityProviderInterface;
 use PhpSpec\ObjectBehavior;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class Drupal7IdentityProviderSpec extends ObjectBehavior {
 
+    protected $users = [];
+
     function let(UserProviderInterface $userProvider) {
 
-        $encoder        = new Drupal7Encoder();
+        $encoder        = new Drupal7PasswordEncoder();
         $encoderFactory = new EncoderFactory([Drupal7User::class => $encoder]);
 
-        $user1           = new Drupal7User();
-        $user1->name     = 'grand';
-        $user1->pass     = '$S$5Bfwxf1yBeU1AV2hw.CEiSkvS8B8qOJaPSuYGvpkD.I1dsoQ2FBW';
+        // setup user 1
+        $name = 'user1';
+        $pass = 'fake password 1';
+        $user  = new Drupal7User();
+        $user->name     = $name;
+        $user->pass     = $encoder->encodePassword($pass, null);
+        $this->users[1] = [$name, $pass, $user];
+        $userProvider->loadUserByUsername($name)->willReturn($user);
 
-        $user2           = new Drupal7User();
-        $user2->name     = 'vantt';
-        $user2->pass     = 'adsfldkjshflasd';
+        // setup user 2
+        $name = 'user2';
+        $pass = 'fake password 2';
+        $user  = new Drupal7User();
+        $user->name     = $name;
+        $user->pass     = $encoder->encodePassword($pass, null);
+        $this->users[2] = [$name, $pass, $user];
+        $userProvider->loadUserByUsername($name)->willReturn($user);
 
-        $userProvider->loadUserByUsername($user1->getUsername())->willReturn($user1);
-        $userProvider->loadUserByUsername($user2->getUsername())->willReturn($user2);
+        // setup an invalid user
         $userProvider->loadUserByUsername('notExist')->willReturn(null);
 
         $this->beConstructedWith($userProvider, $encoderFactory);
@@ -40,34 +50,36 @@ class Drupal7IdentityProviderSpec extends ObjectBehavior {
     }
 
     function it_could_verify_valid_user() {
-        $input = ['username' => 'grand', 'password' => 'Pr!m#rW0rd'];
+        list($name, $pass, $user)  = $this->users[1];
+        $input = ['username' => $name, 'password' => $pass];
+        $this->verify($input)->shouldBe(true);
+
+        list($name, $pass, $user)  = $this->users[2];
+        $input = ['username' => $name, 'password' => $pass];
         $this->verify($input)->shouldBe(true);
     }
 
     function it_could_verify_invalid_password() {
-        $input = ['username' => 'grand', 'password' => 'Wrong Password'];
+        list($name, $pass, $user)  = $this->users[1];
+        $input = ['username' => $name, 'password' => 'invalid password'];
         $this->verify($input)->shouldBe(false);
-    }
-
-    function it_could_verify_invalid_user() {
-        $input = ['username' => 'vantt', 'password' => 'Pr!m#rW0rd'];
-        $this->verify($input)->shouldBe(false);
-    }
-
-    function it_throw_exception_when_username_empty() {
-        $input       = ['username' => null, 'password' => 'Pr!m#rW0rd'];
-        $this->shouldThrow(new CustomUserMessageAuthenticationException("Name could not be empty."))->duringVerify($input);
-    }
-
-    function it_throw_exception_when_missing_username() {
-        $input = ['user' => 'vantt', 'password' => 'adsfasdf'];
-        $this->shouldThrow(new CustomUserMessageAuthenticationException("Name could not be empty."))->duringVerify($input);
     }
 
     function it_throw_exception_when_user_not_found() {
         $input       = ['username' => 'notExist'];
-        $this->shouldThrow(new CustomUserMessageAuthenticationException(sprintf('User %s could not be found.', 'notExist')))->duringVerify($input);
+        $this->shouldThrow(new CustomUserMessageAuthenticationException(sprintf('User %s not found.', 'notExist')))->duringVerify($input);
     }
+
+    function it_throw_exception_when_username_empty() {
+        $input       = ['username' => null, 'password' => 'jasjkhfasfd'];
+        $this->shouldThrow(new CustomUserMessageAuthenticationException("Name could not be empty."))->duringVerify($input);
+    }
+
+    function it_throw_exception_when_missing_username() {
+        $input = ['user' => 'someuser', 'password' => 'adsfasdf'];
+        $this->shouldThrow(new CustomUserMessageAuthenticationException("Name could not be empty."))->duringVerify($input);
+    }
+
 
     function it_throw_exception_when_user_pass_notmatch() {
         $input       = ['username' => 'grand', 'password' => 'Pr!m#rW0rd'];

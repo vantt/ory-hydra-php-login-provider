@@ -1,10 +1,10 @@
-#composer_suite_detection: true
+root_directory: '.'
+spec_prefix: spec
 stop_on_failure: true
-verbose: false
+verbose: true
 formatter.name: pretty
 
 suites:
-  default:
+  app_suite:
     namespace: App
     psr4_prefix: App
-    src_path: src
