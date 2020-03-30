@@ -1,4 +1,7 @@
 # docker network create --driver=bridge --subnet=172.21.0.0/16 --gateway=172.21.0.1 https-proxy
+# docker run -d --restart=always --name=dnsmasq --network=https-proxy --cap-add=NET_ADMIN -p 127.0.0.53:53:53/tcp -p 127.0.0.53:53:53/udp -p 127.0.0.1:53:53/tcp -p 127.0.0.1:53:53/udp -p 192.168.68.171:53:53/tcp -p 192.168.68.171:53:53/udp andyshinn/dnsmasq:2.78 --address=/mio/192.168.68.178 --server=192.168.68.207 --server=192.168.68.206
+# MYIP=`ipconfig getifaddr en0` \
+# docker run -d --restart=always --name=dnsmasq --network=https-proxy --cap-add=NET_ADMIN -p 127.0.0.53:53:53/tcp -p 127.0.0.53:53:53/udp -p 127.0.0.1:53:53/tcp -p 127.0.0.1:53:53/udp -p $MYIP:53:53/tcp -p 192.168.68.171:53:53/udp andyshinn/dnsmasq:2.78 --address=/mio/$MYIP --server=8.8.8.8 --server=8.8.4.4
 version: "3.5"
 
 networks:
@@ -14,19 +17,33 @@ services:
         image: devops/phpfpm:7.4.4
         volumes:
             - ${PROJECT_FOLDER}:/app
+        networks:
+            default: {}
+
     nginx:
         #build: http://git.c
         image: devops/nginx:1.17.9
-        ports:
-            - 8080:8080
+        #ports:
+        #    - 8080:8080 # dont need to expose here since traefik will do forwarding
         depends_on:
             - php
         volumes:
             - ./nginx-vhost.conf:/etc/nginx/conf.d/localhost.conf
             - ${PROJECT_FOLDER}:/app
         networks:
-            proxy: {}
-            default: {}
+            proxy: {}     # road runner will communicate with the world (expose) through this network
+            default: {}   # it will communicate with other internal services here
+        labels:
+            # https://docs.traefik.io/reference/dynamic-configuration/docker/
+            - traefik.enable=true # expose this container through traefik
+            - traefik.http.services.identityProvider.loadbalancer.server.port=8080
+            - traefik.http.routers.identityProvider.entrypoints=http
+            - traefik.http.routers.identityProvider.rule=Host(`id.dev.mio`)
+            #- traefik.http.routers.identityProvider.rule=Host(`id.dev.mio`) && Path(`/login`,`/consent`,`/logout`)
+            - traefik.http.routers.identityProvider.service=identityProvider
+            - traefik.http.routers.identityProvider.tls=false
+            - traefik.http.routers.identityProvider.tls.certresolver=false
+
     dumpserver:
         image: devops/phpcli:7.4.4
         ports:
@@ -35,5 +52,4 @@ services:
             - ${PROJECT_FOLDER}:/app
         command: "php bin/console server:dump"
         networks:
-            proxy: {}
             default: {}

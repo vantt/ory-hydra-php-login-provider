@@ -1,0 +1,84 @@
+###########################################################################
+#######             FOR DEMONSTRATION PURPOSES ONLY                 #######
+###########################################################################
+#                                                                         #
+# If you have not yet read the tutorial, do so now:                       #
+#  https://www.ory.sh/docs/hydra/5min-tutorial                            #
+#                                                                         #
+# This set up is only for demonstration purposes. The login               #
+# endpoint can only be used if you follow the steps in the tutorial.      #
+#                                                                         #
+###########################################################################
+
+version: '3.5'
+
+networks:
+    default:
+        driver: bridge
+    proxy:
+        external: true
+        name: https-proxy
+
+services:
+    hydra-mysqld:
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+    hydra-migrate:
+        image: oryd/hydra:v1.3.2-alpine
+        environment:
+            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
+        command:
+            migrate sql -e --yes
+        restart: on-failure
+
+    hydra:
+        image: oryd/hydra:v1.3.2-alpine
+        depends_on:
+            - hydra-migrate
+        ports:
+            # https://www.ory.sh/docs/hydra/production
+            #- "4444:4444" # Public port
+            - "4445:4445" # Admin port
+            - "5555:5555" # Port for hydra token user
+        command:
+            serve all --dangerous-force-http # turn off https
+        environment:
+            - URLS_SELF_ISSUER=${HYDRA_ISSUE_URL}
+            - URLS_CONSENT=${IDENTITY_PROVIDER_HOST}/consent
+            - URLS_LOGIN=${IDENTITY_PROVIDER_HOST}/login
+            - URLS_LOGOUT=${IDENTITY_PROVIDER_HOST}/logout
+            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4 # - DSN=memory
+            - SECRETS_SYSTEM=youReallyNeedToChangeThis
+            - LOG_LEVEL=debug
+            - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
+            # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
+            #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
+        restart: unless-stopped
+        networks:
+            proxy: {}
+            default: {}
+        labels:
+            # https://docs.traefik.io/reference/dynamic-configuration/docker/
+            # xxxx.xxxx.authServer.xxxxx => authServer here is just a unique-key item for the config section
+            - traefik.enable=true # expose this container through traefik
+            - traefik.http.services.authServer.loadbalancer.server.port=${PUBLIC_PORT} # expose this container port 4444
+            - traefik.http.routers.authServer.entrypoints=http # expose through http endpoint
+            - traefik.http.routers.authServer.rule=Host(`sso.dev.mio`)
+            - traefik.http.routers.authServer.service=authServer # name the service as authServer
+            - traefik.http.routers.authServer.tls=false
+            - traefik.http.routers.authServer.tls.certresolver=false
+
+#    consent:
+#        environment:
+#            - HYDRA_ADMIN_URL=http://127.0.0.1:4445
+#        image: oryd/hydra-login-consent-node:v1.1.1
+#        ports:
+#            - "3000:3000"
+#        restart: unless-stopped
+#        networks:
+#            proxy: {}
+#            default: {}

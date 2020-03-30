@@ -23,13 +23,23 @@ services:
     roadrunner:
         #build: ./build
         image: devops/roadrunner:1.6.4
-        ports:
-            - 8080:8080
+        #ports:
+        #    - 8080:8080 # dont need to expose here since traefik will do forwarding
         volumes:
             - ${PROJECT_FOLDER}:/app
         networks:
-            proxy: {}
-            default: {}
+            proxy: {}     # road runner will communicate with the world (expose) through this network
+            default: {}   # it will communicate with other internal services here
+        labels:
+            # https://docs.traefik.io/reference/dynamic-configuration/docker/
+            - traefik.enable=true # expose this container through traefik
+            - traefik.http.services.identityProvider.loadbalancer.server.port=8080
+            - traefik.http.routers.identityProvider.entrypoints=http
+            - traefik.http.routers.identityProvider.rule=Host(`id.dev.mio`)
+            #- traefik.http.routers.identityProvider.rule=Host(`id.dev.mio`) && Path(`/login`,`/consent`,`/logout`)
+            - traefik.http.routers.identityProvider.service=identityProvider
+            - traefik.http.routers.identityProvider.tls=false
+            - traefik.http.routers.identityProvider.tls.certresolver=false
 
     dumpserver:
         image: devops/phpcli:7.4.4
@@ -39,58 +49,4 @@ services:
             - ${PROJECT_FOLDER}:/app
         command: "php bin/console server:dump"
         networks:
-            proxy: {}
             default: {}
-
-    hydra-mysqld:
-        image: mysql:5.7
-        ports:
-            - "3306:3306"
-        environment:
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-
-    hydra-migrate:
-        image: oryd/hydra:v1.3.2-alpine
-        environment:
-            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
-        command:
-            migrate sql -e --yes
-        restart: on-failure
-
-    hydra:
-        image: oryd/hydra:v1.3.2-alpine
-        depends_on:
-            - hydra-migrate
-        ports:
-            - "4444:4444" # Public port
-            - "4445:4445" # Admin port
-            - "5555:5555" # Port for hydra token user
-        command:
-            serve all --dangerous-force-http # turn off https
-        environment:
-            - URLS_SELF_ISSUER=http://${MYIP}:4444
-            - URLS_CONSENT=http://${MYIP}:8080/consent
-            - URLS_LOGIN=http://${MYIP}:8080/login
-            - URLS_LOGOUT=http://${MYIP}:8080/logout
-            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
-            # - DSN=memory
-            - SECRETS_SYSTEM=youReallyNeedToChangeThis
-            - LOG_LEVEL=debug
-            - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
-            # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
-            #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
-        restart: unless-stopped
-        networks:
-            proxy: {}
-            default: {}
-
-#    consent:
-#        environment:
-#            - HYDRA_ADMIN_URL=http://127.0.0.1:4445
-#        image: oryd/hydra-login-consent-node:v1.1.1
-#        ports:
-#            - "3000:3000"
-#        restart: unless-stopped
-#        networks:
-#            proxy: {}
-#            default: {}
