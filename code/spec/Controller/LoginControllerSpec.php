@@ -3,7 +3,7 @@
 namespace spec\App\Controller;
 
 use App\Controller\LoginController;
-use App\Service\HydraHttpClient;
+use App\Hydra\HydraHttpClient;
 use PhpSpec\ObjectBehavior;
 
 class LoginControllerSpec extends ObjectBehavior
