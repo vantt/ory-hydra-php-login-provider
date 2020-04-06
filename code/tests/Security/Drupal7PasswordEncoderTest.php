@@ -2,7 +2,7 @@
 
 namespace App\Tests\Security;
 
-use App\Security\Drupal7PasswordEncoder;
+use App\Identity\Drupal7PasswordEncoder;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
 class Drupal7PasswordEncoderTest extends TestCase {
@@ -29,6 +29,10 @@ class Drupal7PasswordEncoderTest extends TestCase {
 
     public function testIsPasswordValid() {
         $encoder = new Drupal7PasswordEncoder();
+
+        $rawPassword     = '123456';
+        $encodedPassword = '$S$D/U1UB14rKNAqKMlw3wM7BgyAZuIUjp/pwWw1AHxNVKS3J1QK1h6';
+        $this->assertTrue($encoder->isPasswordValid($encodedPassword, $rawPassword, null), 'Could verify encoded password');
 
         $rawPassword     = 'any random password';
         $encodedPassword = '$S$D6iDOTf0K5p.m165BLd4RNftqXmOlf3tpNED1SrnZWlLOzCOW2lQ';

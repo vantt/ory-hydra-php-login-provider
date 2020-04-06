@@ -1,11 +1,14 @@
 <?php
 
-namespace spec\App\Security;
+namespace spec\App\Identity;
 
 use App\Entity\Drupal7User;
-use App\Security\Drupal7PasswordEncoder;
-use App\Security\Drupal7IdentityProvider;
-use App\Security\IdentityProviderInterface;
+use App\Identity\Drupal7PasswordEncoder;
+use App\Identity\Drupal7IdentityProvider;
+use App\Identity\IdentityProviderInterface;
+use App\Identity\UserNotFoundException;
+use App\Identity\CredentialsNotMatchedException;
+use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
@@ -50,34 +53,37 @@ class Drupal7IdentityProviderSpec extends ObjectBehavior {
     }
 
     function it_could_verify_valid_user() {
-        list($name, $pass, $user)  = $this->users[1];
+        [$name, $pass, $user]  = $this->users[1];
         $input = ['username' => $name, 'password' => $pass];
         $this->verify($input)->shouldBe(true);
 
-        list($name, $pass, $user)  = $this->users[2];
+        [$name, $pass, $user]  = $this->users[2];
         $input = ['username' => $name, 'password' => $pass];
         $this->verify($input)->shouldBe(true);
     }
 
     function it_could_verify_invalid_password() {
-        list($name, $pass, $user)  = $this->users[1];
+        [$name, $pass, $user]  = $this->users[1];
         $input = ['username' => $name, 'password' => 'invalid password'];
         $this->verify($input)->shouldBe(false);
     }
 
     function it_throw_exception_when_user_not_found() {
-        $input       = ['username' => 'notExist'];
-        $this->shouldThrow(new CustomUserMessageAuthenticationException(sprintf('User %s not found.', 'notExist')))->duringVerify($input);
+        $input       = ['username' => 'notExist', 'password' => 'just dummy'];
+        $this->shouldThrow(new UserNotFoundException(sprintf('User %s not found.', 'notExist')))->duringVerify($input);
     }
 
     function it_throw_exception_when_username_empty() {
-        $input       = ['username' => null, 'password' => 'jasjkhfasfd'];
-        $this->shouldThrow(new CustomUserMessageAuthenticationException("Name could not be empty."))->duringVerify($input);
+        $input       = ['username' => null, 'password' => 'just dummy'];
+        $this->shouldThrow(new InvalidArgumentException("Name could not be empty."))->duringVerify($input);
+
+        $input       = ['username' => '', 'password' => 'just dummy'];
+        $this->shouldThrow(new InvalidArgumentException("Name could not be empty."))->duringVerify($input);
     }
 
     function it_throw_exception_when_missing_username() {
-        $input = ['user' => 'someuser', 'password' => 'adsfasdf'];
-        $this->shouldThrow(new CustomUserMessageAuthenticationException("Name could not be empty."))->duringVerify($input);
+        $input = ['user' => 'someuser', 'password' => 'just dummy'];
+        $this->shouldThrow(new InvalidArgumentException("Name could not be empty."))->duringVerify($input);
     }
 
 

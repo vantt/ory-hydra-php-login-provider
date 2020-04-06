@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Security;
+namespace App\Identity;
 
-use App\Entity\Drupal7User;
-use Doctrine\ORM\EntityManagerInterface;
-
+use InvalidArgumentException;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -31,6 +29,7 @@ class Drupal7IdentityProvider implements IdentityProviderInterface {
      * @param array $input
      *
      * @return bool
+     * @throws UserNotFoundException
      */
     final public function verify(array $input): bool {
         $credentials = $this->getCredentials($input);
@@ -42,34 +41,49 @@ class Drupal7IdentityProvider implements IdentityProviderInterface {
         return false;
     }
 
+    /**
+     * @param array $input
+     *
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
     final public function getCredentials(array $input): array {
+        if (empty($input['username'])) {
+            throw new InvalidArgumentException('Name could not be empty.');
+        }
+
+        if (empty($input['password'])) {
+            throw new InvalidArgumentException('Password could not be empty.');
+        }
+
         return [
-          'username' => $input['username'] ?? null,
-          'password' => $input['password'] ?? null,
+          'username' => $input['username'],
+          'password' => $input['password'],
         ];
     }
 
     /**
      * @param mixed                 $credentials
-     *
      * @param UserProviderInterface $userProvider
      *
-     * @return UserInterface|null
+     * @return UserInterface
+     * @throws UserNotFoundException
      */
     final public function getUser(array $credentials, ?UserProviderInterface $userProvider): UserInterface {
-        if (empty($credentials['username'])) {
-            throw new CustomUserMessageAuthenticationException('Name could not be empty.');
-        }
-
         if (null === $userProvider) {
             $user = $this->userProvider->loadUserByUsername($credentials['username']);
         }
         else {
-            $user = $userProvider->loadUserByUsername($credentials['username']);
+            try {
+                $user = $userProvider->loadUserByUsername($credentials['username']);
+            } catch (UsernameNotFoundException $e) {
+                throw new UserNotFoundException(sprintf('User %s not found.', $credentials['username']));
+            }
         }
 
         if (!$user) {
-            throw new CustomUserMessageAuthenticationException(sprintf('User %s not found.', $credentials['username']));
+            throw new UserNotFoundException(sprintf('User %s not found.', $credentials['username']));
         }
 
         return $user;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Security;
+namespace App\Identity;
 
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 
@@ -49,7 +49,6 @@ class Drupal7PasswordEncoder implements PasswordEncoderInterface {
     public function needsRehash(string $encoded): bool {
         // TODO: Implement needsRehash() method.
     }
-
 }
 
 
