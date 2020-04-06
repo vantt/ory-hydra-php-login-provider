@@ -25,8 +25,7 @@ volumes:
 #        driver: local
 #        driver_opts:
 #            type: bind
-#            source: ${PROJECT_FOLDER}
-#            target: "/app"
+#            device: ${PROJECT_FOLDER}
 
     # this is for MacOS
     appVolume:
