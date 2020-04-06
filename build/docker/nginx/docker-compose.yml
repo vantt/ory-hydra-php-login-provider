@@ -11,13 +11,31 @@ networks:
         external: true
         name: https-proxy
 
+volumes:
+    #    # this is for Native Linux (Ubuntu)
+    #    appVolume:
+    #        driver: local
+    #        driver_opts:
+    #            type: bind
+    #            source: ${PROJECT_FOLDER}
+    #            target: "/app"
+
+    # this is for MacOS
+    appVolume:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+            device: ":/System/Volumes/Data/$PWD/${PROJECT_FOLDER}"
+
 services:
     php:
         #build: http://git.c
         image: devops/phpfpm:7.4.4
         volumes:
-            - ${PROJECT_FOLDER}:/app
+            - appVolume:/app
         networks:
+            proxy: {}     # road runner will communicate with the world (expose) through this network
             default: {}
 
     nginx:
@@ -29,7 +47,7 @@ services:
             - php
         volumes:
             - ./nginx-vhost.conf:/etc/nginx/conf.d/localhost.conf
-            - ${PROJECT_FOLDER}:/app
+            - appVolume:/app
         networks:
             proxy: {}     # road runner will communicate with the world (expose) through this network
             default: {}   # it will communicate with other internal services here
@@ -49,7 +67,7 @@ services:
         ports:
             - 9912:9912
         volumes:
-            - ${PROJECT_FOLDER}:/app
+            - appVolume:/app
         command: "php bin/console server:dump"
         networks:
             default: {}
