@@ -2,49 +2,70 @@
 
 namespace App\Hydra\DTO;
 
-class LoginRequest {
+/**
+ * Class ConsentRequest
+ * @package App\Hydra\DTO
+ *
+ * @see https://www.ory.sh/docs/hydra/sdk/api#schemaconsentrequest
+ */
+class ConsentRequest {
 
     /**
      * @var string
      */
     private $challenge;
 
-
+    // Skip, if true, implies that the client has requested the same scopes from the same user previously.
+    // If true, you can skip asking the user to grant the requested scopes, and simply forward the user to the redirect URL.
+    //
+    // This feature allows you to update / set session information.
     /**
      * @var bool
-     *
-     * Skip, if true, implies that the client has requested the same scopes from the same user previously.
-     * If true, you can skip asking the user to grant the requested scopes, and simply forward the user to the redirect URL.
-     *
-     * This feature allows you to update / set session information.
      */
     private $skip;
 
-    // The user-id of the already authenticated user - only set if skip is true
     /**
+     * The user-id of the already authenticated user - only set if skip is true
+     *
      * @var string
      */
     private $subject;
 
-    // The initial OAuth 2.0 request url
     /**
+     * @var string
+     */
+    private $login_challenge;
+
+    /**
+     * @var string
+     */
+    private $login_session_id;
+
+    /**
+     * The initial OAuth 2.0 request url
+     *
      * @var string
      */
     private $request_url;
 
-    // The OAuth 2.0 client that initiated the request
+
     /**
      * @var array
+     *
+     * The OAuth 2.0 client that initiated the request
      */
     private $client;
 
     // The OAuth 2.0 Scope requested by the client,
+    /**
+     * @var array
+     */
     private $requested_scope = [];
 
     /**
      * Information on the OpenID Connect request - only required to process if your UI should support these values.
      *
-     * @var array|mixed
+     * @var array
      */
     private $oidc_context = [];
 
@@ -58,11 +79,11 @@ class LoginRequest {
     private $context;
 
     /**
-     * LoginRequest constructor.
+     * ConsentRequest constructor.
      *
      * @param array $data
      *
-     * @see https://www.ory.sh/docs/hydra/sdk/api#schemaloginrequest
+     * @see https://www.ory.sh/docs/hydra/sdk/api#schemaconsentrequest
      */
     private function __construct(array $data) {
         $important_keys = [
@@ -71,6 +92,8 @@ class LoginRequest {
           'subject',
           'request_url',
           'client',
+          'login_challenge',
+          'login_session_id',
           'requested_scope',
           'oidc_context',
           'context',
@@ -82,29 +105,34 @@ class LoginRequest {
             throw new \InvalidArgumentException(sprintf('Missing many important array items: %s', implode(', ', $missing_keys)));
         }
 
-        $this->skip            = (bool)$data['skip'];
-        $this->challenge       = (string)$data['challenge'];
-        $this->subject         = (string)$data['subject'];
-        $this->request_url     = (string)$data['request_url'];
-        $this->requested_scope = (array)$data['requested_scope'];
-        $this->client          = (array)$data['client'];
-        $this->oidc_context    = (array)$data['oidc_context'];
-        $this->context         = (array)$data['context'];
+        $this->skip             = (bool)$data['skip'];
+        $this->challenge        = (string)$data['challenge'];
+        $this->subject          = (string)$data['subject'];
+        $this->request_url      = (string)$data['request_url'];
+        $this->login_challenge  = (string)$data['login_challenge'];
+        $this->login_session_id = (string)$data['login_session_id'];
+        $this->requested_scope  = (array)$data['requested_scope'];
+        $this->client           = (array)$data['client'];
+        $this->oidc_context     = (array)$data['oidc_context'];
+        $this->context          = (array)$data['context'];
     }
 
     public static function fromArray(array $data): self {
-        return new LoginRequest($data);
+        return new ConsentRequest($data);
     }
 
+    /**
+     * @return string
+     */
     public function getChallenge(): string {
         return $this->challenge;
     }
 
     /**
-     * @return bool|mixed
+     * @return bool
      */
-    final public function getSkip(): bool {
-        return (bool)$this->skip;
+    public function getSkip(): bool {
+        return $this->skip;
     }
 
     /**
@@ -112,6 +140,20 @@ class LoginRequest {
      */
     public function getSubject(): string {
         return $this->subject;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoginChallenge(): string {
+        return $this->login_challenge;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoginSessionId(): string {
+        return $this->login_session_id;
     }
 
     /**
@@ -148,5 +190,8 @@ class LoginRequest {
     public function getContext(): array {
         return $this->context;
     }
+
+
+
 }
 

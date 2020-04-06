@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\App\Hydra;
+namespace spec\App\Hydra\DTO;
 
 use App\Hydra\DTO\LoginRequest;
 use PhpSpec\ObjectBehavior;
@@ -78,10 +78,9 @@ class LoginRequestSpec extends ObjectBehavior {
         $this->getSkip()->shouldReturn($loginRequest['skip']);
         $this->getSubject()->shouldReturn($loginRequest['subject']);
         $this->getRequestUrl()->shouldReturn($loginRequest['request_url']);
-        $this->getRequestedScopes()->shouldReturn($loginRequest['requested_scope']);
+        $this->getRequestedScope()->shouldReturn($loginRequest['requested_scope']);
         $this->getOidcContext()->shouldReturn($loginRequest['oidc_context']);
         $this->getContext()->shouldReturn($loginRequest['context']);
-        $this->getRedirectUrl()->shouldReturn($loginRequest['redirect_url']);
     }
 
 
