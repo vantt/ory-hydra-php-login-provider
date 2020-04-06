@@ -1,0 +1,64 @@
+# https://joshuaavalon.io/setup-traefik-v2-step-by-step
+# https://containo.us/blog/traefik-2-tls-101-23b4fbee81f1/
+# https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-ubuntu-16-04
+# 
+# configuration V1 will totally different with v2
+
+log:
+  level: DEBUG
+
+entryPoints:
+  http:
+    address: :80
+
+  https:
+    address: :443
+    # tls:
+    #   certificates:
+    #     - certFile: /etc/traefik/certs/myKey.crt
+    #       keyFile: /etc/traefik/certs/myKey.key
+
+# configure the Providers
+providers:
+  file:
+      watch: true
+      directory: /etc/traefik/dynamic
+      debugLogGeneratedTemplate: true
+  docker:
+      endpoint: unix:///var/run/docker.sock
+      exposedByDefault: false
+      watch: true
+    
+
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/myKey.crt
+        keyFile:  /etc/traefik/certs/myKey.key
+
+# Enable Traefik API & Dashboard
+api:
+  dashboard: true # enable dashboard
+  insecure: true
+
+# enable AccessLog feature
+accessLog: {}
+
+# enable tracing feature using jaeger
+tracing:
+  jaeger:
+    localAgentHostPort: jaeger:6831
+    samplingServerURL: http://jaeger:5778/sampling
+    collector:
+        endpoint: http://jaeger:14268/api/traces?format=jaeger.thrift
+
+
+#certificatesResolvers:
+#  letsEncrypt:
+#    acme:
+#      email: you@example.com
+#      storage: /etc/traefik/acme/acme.json
+#      dnsChallenge:
+#        provider: cloudflare
+#        delayBeforeCheck: 0        

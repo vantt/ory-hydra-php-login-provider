@@ -1,0 +1,22 @@
+# http:
+#   routers:
+#     http:
+#       entryPoints:
+#         - http
+#       middlewares:
+#         - https_redirect
+#       rule: HostRegexp(`{any:.+}`)
+#       service: noop
+
+#   services:
+#     # noop service, the URL will be never called
+#     noop:
+#       loadBalancer:
+#         servers:
+#           - url: http://192.168.0.1
+
+#   middlewares:
+#     https_redirect:
+#       redirectScheme:
+#         scheme: https
+#         permanent: true
