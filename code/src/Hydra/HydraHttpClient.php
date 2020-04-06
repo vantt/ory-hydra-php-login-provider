@@ -1,8 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace App\Service;
+namespace App\Hydra;
 
+use App\Hydra\DTO\CompletedRequest;
+use App\Hydra\DTO\LoginRequest;
+use App\Hydra\HydraClientInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -49,13 +52,7 @@ class HydraHttpClient implements HydraClientInterface {
         $this->uriFactory         = $uriFactory;
     }
 
-    /**
-     * @param string $challenge
-     *
-     * @return array
-     * @throws \Psr\Http\Client\ClientExceptionInterface
-     */
-    final public function fetchLoginRequest(string $challenge): array {
+    public function fetchLoginRequest(string $challenge): LoginRequest {
 
         $request  = $this->createFetchLoginRequest($challenge);
         $response = $this->httpClient->sendRequest($request);
@@ -89,12 +86,12 @@ class HydraHttpClient implements HydraClientInterface {
                                     ->withHeader('Accept', 'application/json');
     }
 
-    public function acceptLogin($challenge) {
-        // TODO: Implement acceptLogin() method.
+    public function acceptLoginRequest(string $challenge, array $options = []): CompletedRequest {
+        // TODO: Implement acceptLoginRequest() method.
     }
 
-    public function rejectLogin($challenge) {
-        // TODO: Implement rejectLogin() method.
+    public function rejectLoginRequest(string $challenge, array $options = []): CompletedRequest {
+        // TODO: Implement rejectLoginRequest() method.
     }
 
 

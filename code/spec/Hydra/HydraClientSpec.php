@@ -1,11 +1,10 @@
 <?php
 
-namespace spec\App\Service;
+namespace spec\App\Hydra;
 
-use App\Service\HydraHttpClient;
-use App\Service\HydraClientInterface;
+use App\Hydra\HydraHttpClient;
+use App\Hydra\HydraClientInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
