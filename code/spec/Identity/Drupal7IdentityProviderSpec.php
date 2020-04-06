@@ -11,7 +11,6 @@ use App\Identity\CredentialsNotMatchedException;
 use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class Drupal7IdentityProviderSpec extends ObjectBehavior {
@@ -86,9 +85,16 @@ class Drupal7IdentityProviderSpec extends ObjectBehavior {
         $this->shouldThrow(new InvalidArgumentException("Name could not be empty."))->duringVerify($input);
     }
 
+    function it_throw_exception_when_password_empty() {
+        $input       = ['username' => 'just dummy', 'password' => null];
+        $this->shouldThrow(new InvalidArgumentException("Password could not be empty."))->duringVerify($input);
 
-    function it_throw_exception_when_user_pass_notmatch() {
-        $input       = ['username' => 'grand', 'password' => 'Pr!m#rW0rd'];
-        $this->shouldThrow(CustomUserMessageAuthenticationException::class)->duringVerify([[$input]]);
+        $input       = ['username' => 'just dummy', 'password' => ''];
+        $this->shouldThrow(new InvalidArgumentException("Password could not be empty."))->duringVerify($input);
+    }
+
+    function it_throw_exception_when_missing_password() {
+        $input = ['username' => 'someuser', 'pass' => 'just dummy'];
+        $this->shouldThrow(new InvalidArgumentException("Password could not be empty."))->duringVerify($input);
     }
 }

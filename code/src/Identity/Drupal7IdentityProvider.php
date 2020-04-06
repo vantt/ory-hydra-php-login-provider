@@ -33,12 +33,9 @@ class Drupal7IdentityProvider implements IdentityProviderInterface {
      */
     final public function verify(array $input): bool {
         $credentials = $this->getCredentials($input);
+        $user        = $this->getUser($credentials, $this->userProvider);
 
-        if ($user = $this->getUser($credentials, $this->userProvider)) {
-            return $this->checkCredentials($credentials, $user);
-        }
-
-        return false;
+        return $this->checkCredentials($credentials, $user);
     }
 
     /**
@@ -97,9 +94,7 @@ class Drupal7IdentityProvider implements IdentityProviderInterface {
      */
     public function checkCredentials(array $credentials, UserInterface $user): bool {
         $encoder = $this->encoderFactory->getEncoder($user);
-        $isValid = ($user->getUsername() === $credentials['username']) && $encoder->isPasswordValid($user->getPassword(), $credentials['password'], null);
-
-        return $isValid;
+        return ($user->getUsername() === $credentials['username']) && $encoder->isPasswordValid($user->getPassword(), $credentials['password'], null);
     }
 
 }
