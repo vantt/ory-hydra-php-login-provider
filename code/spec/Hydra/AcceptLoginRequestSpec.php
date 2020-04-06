@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\App\Service;
+namespace spec\App\Hydra;
 
-use App\Service\AcceptLoginRequest;
+use App\Hydra\DTO\AcceptLoginRequest;
 use PhpSpec\ObjectBehavior;
 
 class AcceptLoginRequestSpec extends ObjectBehavior

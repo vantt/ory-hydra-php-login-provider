@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Hydra\DTO;
 
 class AcceptLoginRequest {
 
