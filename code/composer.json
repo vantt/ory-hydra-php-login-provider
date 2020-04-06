@@ -32,7 +32,8 @@
         "symfony/twig-pack": "*",
         "symfony/validator": "5.0.*",
         "symfony/web-link": "5.0.*",
-        "symfony/yaml": "5.0.*"
+        "symfony/yaml": "5.0.*",
+        "api-platform/api-pack": "^1.2"
     },
     "require-dev": {
         "phpspec/phpspec": "^6.1",
