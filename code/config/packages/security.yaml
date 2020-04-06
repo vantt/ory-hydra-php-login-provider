@@ -1,7 +1,11 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        users_in_memory: { memory: null }
+        users_in_memory:
+            memory:
+                users:
+                    vantt: { password: '123456' }
+
         drupal7:
             # this is an Entity so we dont need a UserProvider, entity manager will handle this
             entity:
@@ -9,8 +13,11 @@ security:
                 property: name
 
     encoders:
+        # encoder config for in-memory user
+        Symfony\Component\Security\Core\User\User: plaintext
+
         App\Entity\Drupal7User:
-            id: App\Security\Drupal7PasswordEncoder
+            id: App\Identity\Drupal7PasswordEncoder
 
     firewalls:
         dev:

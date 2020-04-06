@@ -13,7 +13,8 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $hydraAdminEndPoint: '%hydraAdmin_endpoint%'
-            $userProvider: '@security.user.provider.concrete.drupal7'
+            #$userProvider: '@security.user.provider.concrete.drupal7'
+            $userProvider: '@security.user.provider.concrete.users_in_memory'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -27,7 +28,7 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Service\HydraClientInterface: '@App\Service\HydraHttpClient'
+    App\Hydra\HydraClientInterface: '@App\Hydra\HydraOryClient'
 
 
     # add more service definitions when explicit configuration is needed
