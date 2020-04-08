@@ -46,7 +46,7 @@ class ConsentRequestSpec extends ObjectBehavior {
     }
 
     function it_should_return_correct_values() {
-        $loginRequest = [
+        $request = [
           "challenge" => 'kjhfkajsdaskjdhflasdf',
 
           "skip"        => true,
@@ -76,20 +76,21 @@ class ConsentRequestSpec extends ObjectBehavior {
           "context"         => ['some_otherthing'],
         ];
 
-        $this->beConstructedThrough('fromArray', [$loginRequest]);
+        $this->beConstructedThrough('fromArray', [$request]);
 
-        $this->getChallenge()->shouldReturn($loginRequest['challenge']);
-        $this->getSkip()->shouldReturn($loginRequest['skip']);
-        $this->getSubject()->shouldReturn($loginRequest['subject']);
-        $this->getRequestUrl()->shouldReturn($loginRequest['request_url']);
-        $this->getRequestedScope()->shouldReturn($loginRequest['requested_scope']);
-        $this->getOidcContext()->shouldReturn($loginRequest['oidc_context']);
-        $this->getContext()->shouldReturn($loginRequest['context']);
+        $this->getChallenge()->shouldReturn($request['challenge']);
+        $this->getSkip()->shouldReturn($request['skip']);
+        $this->getSubject()->shouldReturn($request['subject']);
+        $this->getRequestUrl()->shouldReturn($request['request_url']);
+        $this->getRequestedScope()->shouldReturn($request['requested_scope']);
+        $this->getRequestedAccessTokenAudience()->shouldReturn($request['requested_access_token_audience']);
+        $this->getOidcContext()->shouldReturn($request['oidc_context']);
+        $this->getContext()->shouldReturn($request['context']);
     }
 
 
     function it_should_throw_InvalidArgumentException_when_missing_some_item() {
-        $loginRequest = [
+        $request = [
           "challenge" => 'kjhfkajsdaskjdhflasdf',
 
           "skip"        => true,
@@ -122,25 +123,28 @@ class ConsentRequestSpec extends ObjectBehavior {
 
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray([]);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['challenge']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['challenge']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['skip']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['skip']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['subject']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['subject']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['client']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['client']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['requested_scope']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['requested_scope']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['login_challenge']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['login_challenge']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
 
-        $invalidLoginRequest = $loginRequest; unset($invalidLoginRequest['login_session_id']);
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['login_session_id']);
+        $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
+
+        $invalidLoginRequest = $request; unset($invalidLoginRequest['requested_access_token_audience']);
         $this->shouldThrow(\InvalidArgumentException::class)->duringFromArray($invalidLoginRequest);
     }
 }

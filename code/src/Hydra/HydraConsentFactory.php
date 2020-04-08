@@ -3,7 +3,6 @@
 namespace App\Hydra;
 
 use App\Hydra\DTO\ConsentRequest;
-use App\Hydra\DTO\LoginRequest;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class HydraConsentFactory {
@@ -19,7 +18,6 @@ class HydraConsentFactory {
     private $session;
 
     /**
-     * HydraLogin constructor.
      *
      * @param HydraClientInterface $hydraClient
      * @param SessionInterface     $session
@@ -34,10 +32,10 @@ class HydraConsentFactory {
     /**
      * @param string $challenge
      *
-     * @return HydraLogin
+     * @return HydraConsent
      * @throws HydraException
      */
-    public function fetchConsentRequest(string $challenge): HydraLogin {
+    public function fetchConsentRequest(string $challenge): HydraConsent {
         $request = null;
 
         if (!$request = $this->fetchFromSession($challenge)) {
@@ -47,12 +45,12 @@ class HydraConsentFactory {
         return $request;
     }
 
-    private function fetchFromSession(string $challenge): ?HydraLogin {
+    private function fetchFromSession(string $challenge): ?HydraConsent {
         // fetch from session
-        $login_request   = $this->session->get('hydra_consent_request', null);
+        $request   = $this->session->get('hydra_consent_request', null);
 
-        if ($login_request && $login_request instanceof ConsentRequest && $this->isValidLoginRequest($challenge, $login_request)) {
-            return new HydraLogin($login_request, $this->hydra);
+        if ($request && $request instanceof ConsentRequest && $this->isValidRequest($challenge, $request)) {
+            return new HydraConsent($request, $this->hydra);
         }
 
         return null;
@@ -61,13 +59,13 @@ class HydraConsentFactory {
     /**
      * @param string $challenge
      *
-     * @return HydraLogin|null
+     * @return HydraConsent|null
      * @throws HydraException
      */
-    private function fetchFromHydra(string $challenge): ?HydraLogin {
-        $request   = $this->hydra->fetchLoginRequest($challenge);
+    private function fetchFromHydra(string $challenge): ?HydraConsent {
+        $request   = $this->hydra->fetchConsentRequest($challenge);
 
-        if ($this->isValidLoginRequest($challenge, $request)) {
+        if ($this->isValidRequest($challenge, $request)) {
             $this->session->set('hydra_consent_request', $request);
 
             return new HydraConsent($request, $this->hydra);
@@ -76,7 +74,7 @@ class HydraConsentFactory {
         return null;
     }
 
-    public function isValidLoginRequest(string $current_challenge, LoginRequest $old_login_request): bool {
-        return ($old_login_request->getChallenge() === $current_challenge);
+    public function isValidRequest(string $current_challenge, ConsentRequest $request): bool {
+        return ($request->getChallenge() === $current_challenge);
     }
 }

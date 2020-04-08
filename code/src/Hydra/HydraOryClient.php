@@ -44,8 +44,8 @@ class HydraOryClient implements HydraClientInterface {
      *
      * @throws HydraException
      *
-     * @see https://www.ory.sh/docs/hydra/sdk/api#schemaloginrequest
      * @see https://www.ory.sh/docs/hydra/sdk/api#get-a-login-request
+     * @see https://www.ory.sh/docs/hydra/sdk/api#schemaloginrequest
      */
     final public function fetchLoginRequest(string $challenge): LoginRequest {
 
@@ -55,7 +55,7 @@ class HydraOryClient implements HydraClientInterface {
 
         return LoginRequest::fromArray(
           [
-            'challenge'       => (string)$response->getChallenge(),
+            'challenge' => (string)$response->getChallenge(),
 
             'skip'            => (bool)$response->getSkip(),
 
@@ -66,7 +66,7 @@ class HydraOryClient implements HydraClientInterface {
             'request_url'     => (string)$response->getRequestUrl(),
 
             // The OAuth 2.0 client that initiated the request
-            'client'          => (array)$response->getClient(),
+            'client'          => $response->getClient(),
 
             // The OAuth 2.0 Scope requested by the client,
             'requested_scope' => (array)$response->getRequestedScope(),
@@ -96,16 +96,16 @@ class HydraOryClient implements HydraClientInterface {
     public function acceptLoginRequest($challenge, array $options = []): CompletedRequest {
         $request = new HydraAcceptLoginRequest();
 
-        if (null !== (($value = $options['subject']) ?? null)) {
+        if (null !== ($value = $options['subject'] ?? null)) {
             $request->setSubject($value);
         }
 
-        if (null !== (($value = $options['remember']) ?? null)) {
+        if (null !== ($value = $options['remember'] ?? null)) {
             $request->setRemember($value);
         }
 
         // When the session expires, in seconds. Set this to 0 so it will never expire
-        if (null !== (($value = $options['remember_for']) ?? null)) {
+        if (null !== ($value = $options['remember_for'] ?? null)) {
             $request->setRememberFor($value);
         }
 
@@ -134,19 +134,19 @@ class HydraOryClient implements HydraClientInterface {
     public function rejectLoginRequest($challenge, array $options = []): CompletedRequest {
         $request = new HydraRejectRequest();
 
-        if (!empty(($value = $options['error']) ?? null)) {
+        if (null !== ($value = $options['error'] ?? null)) {
             $request->setError($value);
         }
 
-        if (!empty(($value = $options['error_debug']) ?? null)) {
+        if (null !== ($value = $options['error_debug'] ?? null)) {
             $request->setErrorDebug($value);
         }
 
-        if (!empty(($value = $options['error_description']) ?? null)) {
+        if (null !== ($value = $options['error_description'] ?? null)) {
             $request->setErrorDescription($value);
         }
 
-        if (!empty(($value = $options['error_hint']) ?? null)) {
+        if (null !== ($value = $options['error_hint'] ?? null)) {
             $request->setErrorHint($value);
         }
 
@@ -179,33 +179,35 @@ class HydraOryClient implements HydraClientInterface {
 
         return ConsentRequest::fromArray(
           [
-            'challenge'        => (string)$response->getChallenge(),
+            'challenge' => (string)$response->getChallenge(),
 
-            'skip'             => (bool)$response->getSkip(),
+            'skip'        => (bool)$response->getSkip(),
 
             // The user-id of the already authenticated user - only set if skip is true
-            'subject'          => (string)$response->getSubject(),
+            'subject'     => (string)$response->getSubject(),
 
             // The initial OAuth 2.0 request url
-            'request_url'      => (string)$response->getRequestUrl(),
+            'request_url' => (string)$response->getRequestUrl(),
 
-            'login_challenge'  => (string)$response->getLoginChallenge(),
+            'login_challenge' => (string)$response->getLoginChallenge(),
 
             'login_session_id' => (string)$response->getLoginSessionId(),
 
             // The OAuth 2.0 client that initiated the request
-            'client'           => (array)$response->getClient(),
+            'client'           => $response->getClient(),
+
+            'requested_access_token_audience' => (array)$response->getRequestedAccessTokenAudience(),
 
             // The OAuth 2.0 Scope requested by the client,
-            'requested_scope'  => (array)$response->getRequestedScope(),
+            'requested_scope'                 => (array)$response->getRequestedScope(),
 
             // Information on the OpenID Connect request - only required to process if your UI should support these values.
-            'oidc_context'     => (array)$response->getOidcContext(),
+            'oidc_context'                    => (array)$response->getOidcContext(),
 
             // Context is an optional object which can hold arbitrary data. The data will be made available when fetching the
             // consent request under the "context" field. This is useful in scenarios where login and consent endpoints share
             // data.
-            'context'          => [],
+            'context'                         => [],
           ]
         );
     }
@@ -223,17 +225,36 @@ class HydraOryClient implements HydraClientInterface {
      * @see   https://www.ory.sh/docs/hydra/sdk/api#schemaacceptconsentrequest
      */
     public function acceptConsentRequest(string $challenge, array $options = []): CompletedRequest {
+
+        //        {
+        //            "grant_access_token_audience": ["string"],
+        //  "grant_scope": ["string"],
+        //  "handled_at": "2020-04-04T21:15:27Z",
+        //  "remember": true,
+        //  "remember_for": 0,
+        //  "session": {
+        //            "access_token": {
+        //                "property1": {},
+        //      "property2": {}
+        //    },
+        //    "id_token": {
+        //                "property1": {},
+        //      "property2": {}
+        //    }
+        //  }
+        //}
+
         $request = new HydraAcceptConsentRequest();
 
-        if (!empty(($value = $options['x']) ?? null)) {
-            $request->setSubject($value);
+        if (null !== ($value = $options['session'] ?? null)) {
+            $request->setSession($value);
         }
 
-        if (!empty(($value = $options['x']) ?? null)) {
+        if (null !== ($value = $options['remember'] ?? null)) {
             $request->setRemember($value);
         }
 
-        if (!empty(($value = $options['x']) ?? null)) {
+        if (null !== ($value = $options['remember_for'] ?? null)) {
             $request->setRememberFor($value);
         }
 
@@ -260,18 +281,22 @@ class HydraOryClient implements HydraClientInterface {
      * @see https://www.ory.sh/docs/hydra/sdk/api#schemacompletedrequest
      */
     public function rejectConsentRequest($challenge, array $options = []): CompletedRequest {
-        $request = new RejectRequest();
+        $request = new HydraRejectRequest();
 
-        if (!empty(($value = $options['x']) ?? null)) {
-            $request->setSubject($value);
+        if (null !== ($value = $options['error'] ?? null)) {
+            $request->setError($value);
         }
 
-        if (!empty(($value = $options['x']) ?? null)) {
-            $request->setRemember($value);
+        if (null !== ($value = $options['error_debug'] ?? null)) {
+            $request->setErrorDebug($value);
         }
 
-        if (!empty(($value = $options['x']) ?? null)) {
-            $request->setRememberFor($value);
+        if (null !== ($value = $options['error_description'] ?? null)) {
+            $request->setErrorDescription($value);
+        }
+
+        if (null !== ($value = $options['error_hint'] ?? null)) {
+            $request->setErrorHint($value);
         }
 
         /** @var HydraCompletedRequest $response */

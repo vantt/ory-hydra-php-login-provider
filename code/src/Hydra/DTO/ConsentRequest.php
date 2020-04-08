@@ -6,7 +6,7 @@ namespace App\Hydra\DTO;
  * Class ConsentRequest
  * @package App\Hydra\DTO
  *
- * @see https://www.ory.sh/docs/hydra/sdk/api#schemaconsentrequest
+ * @see     https://www.ory.sh/docs/hydra/sdk/api#schemaconsentrequest
  */
 class ConsentRequest {
 
@@ -63,9 +63,14 @@ class ConsentRequest {
     private $requested_scope = [];
 
     /**
+     * @var  array
+     */
+    private $requested_access_token_audience = [];
+
+    /**
      * Information on the OpenID Connect request - only required to process if your UI should support these values.
      *
-     * @var array
+     * @var string[]
      */
     private $oidc_context = [];
 
@@ -94,6 +99,7 @@ class ConsentRequest {
           'client',
           'login_challenge',
           'login_session_id',
+          'requested_access_token_audience',
           'requested_scope',
           'oidc_context',
           'context',
@@ -105,16 +111,17 @@ class ConsentRequest {
             throw new \InvalidArgumentException(sprintf('Missing many important array items: %s', implode(', ', $missing_keys)));
         }
 
-        $this->skip             = (bool)$data['skip'];
-        $this->challenge        = (string)$data['challenge'];
-        $this->subject          = (string)$data['subject'];
-        $this->request_url      = (string)$data['request_url'];
-        $this->login_challenge  = (string)$data['login_challenge'];
-        $this->login_session_id = (string)$data['login_session_id'];
-        $this->requested_scope  = (array)$data['requested_scope'];
-        $this->client           = (array)$data['client'];
-        $this->oidc_context     = (array)$data['oidc_context'];
-        $this->context          = (array)$data['context'];
+        $this->skip                            = (bool)$data['skip'];
+        $this->challenge                       = (string)$data['challenge'];
+        $this->subject                         = (string)$data['subject'];
+        $this->request_url                     = (string)$data['request_url'];
+        $this->login_challenge                 = (string)$data['login_challenge'];
+        $this->login_session_id                = (string)$data['login_session_id'];
+        $this->requested_access_token_audience = (array)$data['requested_access_token_audience'];
+        $this->requested_scope                 = (array)$data['requested_scope'];
+        $this->client                          = $data['client'];
+        $this->oidc_context                    = (array)$data['oidc_context'];
+        $this->context                         = (array)$data['context'];
     }
 
     public static function fromArray(array $data): self {
@@ -166,7 +173,7 @@ class ConsentRequest {
     /**
      * @return array
      */
-    public function getClient(): array {
+    public function getClient() {
         return $this->client;
     }
 
@@ -191,7 +198,11 @@ class ConsentRequest {
         return $this->context;
     }
 
-
-
+    /**
+     * @return string
+     */
+    public function getRequestedAccessTokenAudience(): array {
+        return $this->requested_access_token_audience;
+    }
 }
 

@@ -27,17 +27,17 @@ security:
         # https://github.com/knpuniversity/oauth2-client-bundle#authenticating-with-guard
         # https://github.com/symfony/symfony/blob/5.0/src/Symfony/Component/Security/Core/Authentication/AuthenticationProviderManager.php
         # Symfony/Component/Security/Core/Authentication/Provider/DaoAuthenticationProvider
-        main:
-            anonymous: lazy
-            provider: drupal7
-            stateless: false # disable storing user in session
-            guard:
-                authenticators:
-                    - App\Security\LoginFormAuthenticator
-            logout:
-                path: app_logout
-                invalidate_session: true
-                delete_cookies: ~
+#        main:
+#            anonymous: lazy
+#            provider: drupal7
+#            stateless: false # disable storing user in session
+#            guard:
+#                authenticators:
+#                    - App\Security\LoginFormAuthenticator
+#            logout:
+#                path: app_logout
+#                invalidate_session: true
+#                delete_cookies: ~
 
                 # target: app_any_route
 

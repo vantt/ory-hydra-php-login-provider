@@ -4,7 +4,6 @@ namespace App\Hydra;
 
 use App\Hydra\DTO\CompletedRequest;
 use App\Hydra\DTO\ConsentRequest;
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 class HydraConsent {
 
@@ -13,9 +12,8 @@ class HydraConsent {
      */
     private $hydra;
 
-
     /**
-     * @var ?ConsentRequest
+     * @var ConsentRequest
      * @see https://www.ory.sh/docs/hydra/sdk/api#get-consent-request-information
      */
     private $consent_request;
@@ -28,18 +26,50 @@ class HydraConsent {
      */
     public function __construct(ConsentRequest $request, HydraClientInterface $hydraClient) {
         $this->consent_request = $request;
-        $this->hydra         = $hydraClient;
+        $this->hydra           = $hydraClient;
     }
 
     /**
      * @see https://www.ory.sh/docs/hydra/sdk/api#accept-a-consent-request
      * @see https://www.ory.sh/docs/hydra/sdk/api#schemacompletedrequest
      *
-     * @param array $options
+     * @param array     $grant_scope
+     * @param array     $access_token_data
+     * @param array     $id_token_data
+     * @param bool|null $remember
+     * @param int|null  $remember_for
+     * @param array     $extra_options
      *
      * @return CompletedRequest
+     * @throws HydraException
      */
-    final public function acceptConsentRequest(array $options): CompletedRequest {
+    final public function acceptConsentRequest(array $grant_scope = [], array $access_token_data = [], array $id_token_data = [], ?bool $remember = null, ?int $remember_for = null, array $extra_options = []): CompletedRequest {
+        $session_data = [];
+        $options      = [];
+
+        $options['grant_scope']                 = !empty($grant_scope) ? $grant_scope : $this->consent_request->getRequestedScope();
+        $options['grant_access_token_audience'] = $this->consent_request->getRequestedAccessTokenAudience();
+
+        if (null !== $remember) {
+            $options['remember'] = $remember;
+        }
+
+        if (null !== $remember_for) {
+            $options['remember_for'] = $remember_for;
+        }
+
+        if (!empty($access_token_data)) {
+            $session_data['access_token'] = $access_token_data;
+        }
+
+        if (!empty($id_token_data)) {
+            $session_data['id_token'] = $id_token_data;
+        }
+
+        if (!empty($session_data)) {
+            $options['session'] = $session_data;
+        }
+
         return $this->hydra->acceptConsentRequest($this->consent_request->getChallenge(), $options);
     }
 
@@ -48,13 +78,21 @@ class HydraConsent {
      *
      * @return CompletedRequest
      *
+     * @throws HydraException
+     *
      * @see https://www.ory.sh/docs/hydra/sdk/api#reject-a-consent-request
      */
-    final public function rejectConsentRequest(array $options): CompletedRequest {
+    final public function rejectConsentRequest(
+                              string $error = 'access_denied',
+                              string $error_description = 'The resource owner denied the request',
+                              array $extraoptions = []): CompletedRequest {
+        $options['error']             = $error;
+        $options['error_description'] = $error_description;
+
         return $this->hydra->rejectConsentRequest($this->consent_request->getChallenge(), $options);
     }
 
-    public function isSkipLogin(): bool {
+    public function isSkip(): bool {
         return ($this->consent_request->getSkip() === true);
     }
 
