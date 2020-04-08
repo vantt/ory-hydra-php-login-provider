@@ -2,12 +2,13 @@
 
 namespace App\Controller;
 
-use App\Hydra\DTO\CompletedRequest;
+use App\Hydra\DTO\LoginFormDTO;
 use App\Hydra\HydraException;
 use App\Hydra\HydraLogin;
 use App\Hydra\HydraLoginFactory;
 use App\Identity\IdentityProviderInterface;
 use App\Identity\UserNotFoundException;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -56,118 +57,74 @@ class LoginController extends AbstractController {
         $login          = null;
 
         dump('before fetch login');
+        try {
+            $login = $this->fetchLogin($request);
 
-        [$login, $hydraException] = $this->fetchLogin($request);
+            if ($login->isSkip()) {
+                $response = $login->acceptLoginRequest();
 
-        if ($login) {
-            if ($login->isSkipLogin()) {
-                assert($login instanceof HydraLogin);
-                dump('skip login, before accept login');
-                [$response, $hydraException] = $this->acceptLogin($login, $login->getSubject());
-
-                if ($response) {
-                    assert($response instanceof CompletedRequest);
-
-                    return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
-                }
+                return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
             }
 
+            [$form, $isUserValid, $formData] = $this->handleForm($login->getChallenge(), $request);
 
-            dump('into form handling');
-            [$form, $isUserValid, $username] = $this->handleForm($login->getChallenge(), $request);
-
-
-            if ($isUserValid) {
+            /** @var LoginFormDTO $formData */
+            if ($formData && $isUserValid) {
                 dump('user check valid');
                 dump('doing accept Login');
 
-                [$response, $hydraException] = $this->acceptLogin($login, $username, true, 3600);
-                dump('success accept Login');
-                if ($response) {
-                    assert($response instanceof CompletedRequest);
+                $response = $login->acceptLoginRequest($formData->getUsername(), $formData->isRemember(), 3600);
 
-                    return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
-                }
+                return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
             }
-        }
+//            else {
+//                // you could handle login rejection here
+//            }
 
-        /** @var HydraException $hydraException */
-        if ($hydraException) {
-            throw new HttpException(500, $hydraException->getMessage());
+            return $this->render('security/login.html.twig',
+                                 [
+                                   'form' => $form->createView(),
+                                 ]
+            );
+        } catch (HydraException $e) {
+            throw new HttpException(500, $e->getMessage());
         }
-
-        return $this->render('security/login.html.twig',
-                             [
-                               'form'           => $form->createView(),
-                               'error'          => $error
-                             ]
-        );
     }
 
     /**
      * @param Request $request
      *
-     * @return array [?LoginRequest, ?HydraException]
+     * @return HydraLogin
+     * @throws HydraException
      */
-    private function fetchLogin(Request $request): array {
+    private function fetchLogin(Request $request): HydraLogin {
         $challenge = $request->get('login_challenge');
 
         if (empty($challenge)) {
             $challenge = $request->request->get('form', [])['challenge'] ?? null;
         }
 
-        try {
-            return [$this->loginFactory->fetchLoginRequest($challenge), null];
-        } catch (HydraException $e) {
-            return [null, $e];
-        }
-    }
-
-    /**
-     * @param HydraLogin $login
-     * @param string     $subject
-     * @param bool|null  $remember
-     * @param int|null   $remember_for
-     *
-     * @return array [?CompletedRequest, ?HydraException]
-     *
-     * @see  https://www.ory.sh/docs/hydra/sdk/api#accept-a-login-request
-     */
-    private function acceptLogin(HydraLogin $login, string $subject, ?bool $remember = null, ?int $remember_for = null): array {
-        $options = ['subject' => $subject];
-
-        if (null !== $remember) {
-            $options['remember'] = $remember;
-        }
-
-        if (null !== $remember_for) {
-            $options['remember_for'] = $remember_for;
-        }
-
-        try {
-            return [$login->acceptLoginRequest($options), null];
-        } catch (HydraException $e) {
-            return [null, $e];
-        }
+        return $this->loginFactory->fetchLoginRequest($challenge);
     }
 
     private function handleForm(string $challenge, Request $request): array {
         $isUserValid = false;
-        $username    = null;
+        $data        = null;
 
         $form = $this->buildForm($challenge);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            dump('going to submit form');
-
-            $data     = $form->getData();
-            $username = $data['username'] ?? null;
-            $password = $data['password'] ?? null;
+            $data = $form->getData();
+            assert($data instanceof LoginFormDTO);
 
             try {
                 dump('before user validation');
-                $isUserValid = $this->identityProvider->verify(['username' => $username, 'password' => $password]);
+                $isUserValid = $this->identityProvider->verify([
+                                                                 'username' => $data->getUsername(),
+                                                                 'password' => $data->getPassword(),
+                                                               ]
+                );
 
                 if (!$isUserValid) {
                     dump('user is not valid');
@@ -180,20 +137,23 @@ class LoginController extends AbstractController {
         }
 
         dump('out of form handling');
-        return [$form, $isUserValid, $username];
+
+        return [$form, $isUserValid, $data];
     }
 
     /**
-     * @param string|null $login_challenge
+     * @param string $login_challenge
      *
      * @return FormInterface
      * @see Customize form rendering
      *      https://symfony.com/doc/current/form/form_customization.html
      *
      */
-    final public function buildForm(?string $login_challenge): FormInterface {
+    final public function buildForm(string $login_challenge): FormInterface {
 
-        $defaultData = ['challenge' => $login_challenge];
+        $defaultData = new LoginFormDTO();
+        $defaultData->setChallenge($login_challenge);
+
         $formOptions = [
           'csrf_protection' => true,
 
@@ -205,14 +165,18 @@ class LoginController extends AbstractController {
           'csrf_token_id'   => 'authenticate',
         ];
 
-        $form = $this->createFormBuilder($defaultData, $formOptions)
-                     ->add('username', TextType::class)
-                     ->add('password', PasswordType::class)
-                     ->add('challenge', HiddenType::class)
-                     ->add('submit', SubmitType::class, ['label' => 'Sign in'])
-                     ->getForm();
-
-        return $form;
+        return $this->createFormBuilder($defaultData, $formOptions)
+                    ->add('username', TextType::class)
+                    ->add('password', PasswordType::class)
+                    ->add('remember', CheckboxType::class,
+                          [
+                            'label'    => 'Remember me',
+                            'required' => false,
+                          ]
+                    )
+                    ->add('challenge', HiddenType::class)
+                    ->add('submit', SubmitType::class, ['label' => 'Sign in'])
+                    ->getForm();
     }
 
 }

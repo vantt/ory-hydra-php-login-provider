@@ -87,7 +87,7 @@ class LoginRequest {
         $this->subject         = (string)$data['subject'];
         $this->request_url     = (string)$data['request_url'];
         $this->requested_scope = (array)$data['requested_scope'];
-        $this->client          = (array)$data['client'];
+        $this->client          = $data['client'];
         $this->oidc_context    = (array)$data['oidc_context'];
         $this->context         = (array)$data['context'];
     }

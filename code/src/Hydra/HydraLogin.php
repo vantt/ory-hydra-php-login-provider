@@ -39,11 +39,26 @@ class HydraLogin {
     /**
      * https://www.ory.sh/docs/hydra/sdk/api#accept-a-login-request
      *
-     * @param array $options
+     * @param string    $subject
+     * @param bool|null $remember
+     * @param int|null  $remember_for
+     * @param array     $extra_options
      *
      * @return CompletedRequest
+     * @throws HydraException
      */
-    public function acceptLoginRequest(array $options): CompletedRequest {
+    public function acceptLoginRequest(?string $subject = null, ?bool $remember = null, ?int $remember_for = null, array $extra_options=[]): CompletedRequest {
+        $options = [];
+        $options['subject'] = $subject ?? $this->login_request->getSubject();
+
+        if (null !== $remember) {
+            $options['remember'] = $remember;
+        }
+
+        if (null !== $remember_for) {
+            $options['remember_for'] = $remember_for;
+        }
+
         return $this->hydra->acceptLoginRequest($this->login_request->getChallenge(), $options);
     }
 
@@ -57,7 +72,7 @@ class HydraLogin {
         return $this->hydra->rejectLoginRequest($this->login_request->getChallenge(), $options);
     }
 
-    public function isSkipLogin(): bool {
+    public function isSkip(): bool {
         return ($this->login_request->getSkip() === true);
     }
 
