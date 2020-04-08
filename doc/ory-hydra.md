@@ -72,6 +72,15 @@ URLS_SELF_CONSENT: the URL of the Consent Provider
 URLS_SELF_LOGOUT: the URL of the Logout Provider      
   
 ## Create OAuth clients
+
+### Create client reference
+```shell script
+
+docker run --rm -it oryd/hydra:v1.3.2-alpine clients create --help
+
+docker run --rm -it oryd/hydra:v1.3.2-alpine clients get --help
+
+```
 ### Approach 1:
 
 Use docker run, and set Hydra Admin-Endpoint using environment variable.  
@@ -83,6 +92,7 @@ docker run --rm -it \
     oryd/hydra:v1.3.2-alpine \
         clients create --skip-tls-verify \
             --id client1 \
+            --name "The Name of Client1" \
             --secret some-secret \
             --grant-types authorization_code,refresh_token,client_credentials,implicit \
             --response-types token,code,id_token \
@@ -103,6 +113,7 @@ docker run --rm -it \
     oryd/hydra:v1.3.2-alpine \
         --endpoint http://127.0.0.1:4445 \
         --id client2 \
+        --name "The Name of Client2" \
         --secret some_secret \
         --grant-types authorization_code,refresh_token \
         --response-types code,id_token \
@@ -123,6 +134,7 @@ docker run --rm -it \
 		clients create --skip-tls-verify \
 			--endpoint http://hydra:4445 \
 			--id client3 \
+            --name "The Name of Client3" \
 			--secret some-secret \
 			--grant-types authorization_code,refresh_token,client_credentials,implicit \
 			--response-types token,code,id_token \
@@ -198,6 +210,7 @@ docker run --rm -it \
 		clients create --skip-tls-verify \
 			--endpoint http://hydra:4445 \
 			--id oauthdebugger \
+            --name "OAuth Debugger" \
 			--secret some-secret \
 			--grant-types authorization_code,refresh_token,client_credentials,implicit \
 			--response-types token,code,id_token \
