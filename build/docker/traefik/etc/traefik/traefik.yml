@@ -2,7 +2,7 @@
 # https://containo.us/blog/traefik-2-tls-101-23b4fbee81f1/
 # https://www.digitalocean.com/community/tutorials/how-to-use-traefik-as-a-reverse-proxy-for-docker-containers-on-ubuntu-16-04
 # 
-# configuration V1 will totally different with v2
+# configuration v2 will totally different with v1
 
 log:
   level: DEBUG
@@ -13,10 +13,6 @@ entryPoints:
 
   https:
     address: :443
-    # tls:
-    #   certificates:
-    #     - certFile: /etc/traefik/certs/myKey.crt
-    #       keyFile: /etc/traefik/certs/myKey.key
 
 # configure the Providers
 providers:
@@ -28,14 +24,7 @@ providers:
       endpoint: unix:///var/run/docker.sock
       exposedByDefault: false
       watch: true
-    
 
-tls:
-  stores:
-    default:
-      defaultCertificate:
-        certFile: /etc/traefik/certs/myKey.crt
-        keyFile:  /etc/traefik/certs/myKey.key
 
 # Enable Traefik API & Dashboard
 api:

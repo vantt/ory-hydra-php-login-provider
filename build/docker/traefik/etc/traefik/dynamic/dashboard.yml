@@ -7,6 +7,4 @@ http:
         - https
       rule: Host(`traefik.dev.mio`)
       service: api@internal # This is the defined name for api. You cannot change it.
-      tls:
-        certFile: /etc/traefik/certs/myKey.crt
-        keyFile: /etc/traefik/certs/myKey.key
+      tls: {}

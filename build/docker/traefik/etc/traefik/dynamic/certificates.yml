@@ -1,0 +1,21 @@
+# #######
+#
+# CAUTION:
+#
+# this config file must be loaded by the File Provider
+# or traefil will not recognize your certificates
+#
+#
+
+tls:
+    certificates:
+        - certFile: /etc/traefik/certs/myKey.crt
+          keyFile: /etc/traefik/certs/myKey.key
+          stores:
+              - default
+
+    stores:
+        default:
+            defaultCertificate:
+                certFile: /etc/traefik/certs/myKey.crt
+                keyFile:  /etc/traefik/certs/myKey.key

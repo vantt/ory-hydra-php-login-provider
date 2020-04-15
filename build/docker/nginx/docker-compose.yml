@@ -18,6 +18,7 @@ volumes:
     #        driver_opts:
     #            type: bind
     #            device: ${PROJECT_FOLDER}
+    #            o: bind
 
     # this is for MacOS
     appVolume:
@@ -52,14 +53,20 @@ services:
             default: {}   # it will communicate with other internal services here
         labels:
             # https://docs.traefik.io/reference/dynamic-configuration/docker/
+            # https://docs.traefik.io/routing/providers/docker/
             - traefik.enable=true # expose this container through traefik
             - traefik.http.services.identityProvider.loadbalancer.server.port=8080
-            - traefik.http.routers.identityProvider.entrypoints=http
-            - traefik.http.routers.identityProvider.rule=Host(`id.dev.mio`)
-            #- traefik.http.routers.identityProvider.rule=Host(`id.dev.mio`) && Path(`/login`,`/consent`,`/logout`)
-            - traefik.http.routers.identityProvider.service=identityProvider
-            - traefik.http.routers.identityProvider.tls=false
-            - traefik.http.routers.identityProvider.tls.certresolver=false
+
+            # http route, redirect to https
+            - traefik.http.routers.identityProvider_http.entrypoints=http
+            - traefik.http.routers.identityProvider_http.rule=Host(`id.dev.mio`)
+            - traefik.http.routers.identityProvider_http.middlewares=force-https@file
+
+            # https route
+            - traefik.http.routers.identityProvider_https.entrypoints=https
+            - traefik.http.routers.identityProvider_https.rule=Host(`id.dev.mio`)
+            - traefik.http.routers.identityProvider_https.tls=true
+            - traefik.http.routers.identityProvider_https.service=identityProvider
 
     dumpserver:
         image: devops/phpcli:7.4.4
