@@ -55,7 +55,7 @@ services:
             # http route, redirect to https
             - traefik.http.routers.identityProvider_http.entrypoints=http
             - traefik.http.routers.identityProvider_http.rule=Host(`id.dev.mio`)
-            - traefik.http.routers.identityProvider_http.middlewares=force-https@file
+            - traefik.http.routers.identityProvider_http.middlewares=force-https@file # use file provider
 
             # https route
             - traefik.http.routers.identityProvider_https.entrypoints=https
