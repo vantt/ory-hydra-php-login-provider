@@ -28,7 +28,7 @@ services:
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
     hydra-migrate:
-        image: oryd/hydra:v1.3.2-alpine
+        image: oryd/hydra:v1.4.2-alpine
         environment:
             - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
         command:
@@ -36,7 +36,7 @@ services:
         restart: on-failure
 
     hydra:
-        image: oryd/hydra:v1.3.2-alpine
+        image: oryd/hydra:v1.4.2-alpine
         depends_on:
             - hydra-migrate
         ports:
@@ -45,7 +45,9 @@ services:
             - "4445:4445" # Admin port
             - "5555:5555" # Port for hydra token user
         command:
-            serve all --dangerous-force-http # turn off https
+            serve all # --dangerous-force-http # turn off https
+        volumes:
+            - ./hydra.yaml:/home/ory/.hydra
         environment:
             - URLS_SELF_ISSUER=${HYDRA_ISSUE_URL}
             - URLS_CONSENT=${IDENTITY_PROVIDER_HOST}/consent
@@ -57,6 +59,14 @@ services:
             - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
             # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
             #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
+
+            # Setup Tracer
+            #- TRACING_PROVIDER=jaeger
+            #- TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE=const
+            #- TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE=1
+            - TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL=http://jaeger:5778/sampling
+            - TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS=jaeger:6831
+
         restart: unless-stopped
         networks:
             proxy: {}
@@ -66,11 +76,10 @@ services:
             # xxxx.xxxx.authServer.xxxxx => authServer here is just a unique-key item for the config section
             - traefik.enable=true # expose this container through traefik
             - traefik.http.services.authServer.loadbalancer.server.port=${PUBLIC_PORT} # expose this container port 4444
-            - traefik.http.routers.authServer.entrypoints=http # expose through http endpoint
+            - traefik.http.routers.authServer.entrypoints=https # expose through https endpoint
             - traefik.http.routers.authServer.rule=Host(`sso.dev.mio`)
             - traefik.http.routers.authServer.service=authServer # name the service as authServer
-            - traefik.http.routers.authServer.tls=false
-            - traefik.http.routers.authServer.tls.certresolver=false
+            - traefik.http.routers.authServer.tls=true
 
 #    consent:
 #        environment:

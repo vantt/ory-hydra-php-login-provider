@@ -127,6 +127,7 @@ serve:
         # - Windows Command Line (CMD):
         #    > set SERVE_PUBLIC_PORT=<value>
         #
+        # vantt/mio: will overwritten by DOCKER_ENV: SERVE_PUBLIC_PORT
         port: 4444
 
         ## host ##
@@ -142,7 +143,9 @@ serve:
         # - Windows Command Line (CMD):
         #    > set SERVE_PUBLIC_HOST=<value>
         #
-        host: localhost
+        # vantt/mio: listen on all interfaces
+        # vantt/mio: will overwritten by DOCKER_ENV: SERVE_PUBLIC_HOST
+        host: ""
 
         ## cors ##
         #
@@ -170,7 +173,7 @@ serve:
             # Default value: *
             #
             # Examples:
-            # - - https://example.com
+            #   - https://example.com
             #   - https://*.example.com
             #   - https://*.foo.example.com
             #
@@ -180,8 +183,9 @@ serve:
             # - Windows Command Line (CMD):
             #    > set SERVE_PUBLIC_CORS_ALLOWED_ORIGINS=<value>
             #
+            # vantt/mio: please modified here
             allowed_origins:
-                - *
+                - "*"
                 #- https://example.com
                 #- https://*.example.com
                 #- https://*.foo.example.com
@@ -289,6 +293,9 @@ serve:
         # - Windows Command Line (CMD):
         #    > set SERVE_ADMIN_PORT=<value>
         # port: 6721
+        #
+        # vantt/mio: listen on all interfaces
+        # vantt/mio: will overwritten by DOCKER_ENV: SERVE_ADMIN_PORT
         port: 4445
 
         ## host ##
@@ -410,7 +417,7 @@ serve:
         #
         # Configures the private key (pem encoded).
         #
-        key:
+        ## key:
             ## base64 ##
             #
             # Set this value using environment variables on
@@ -419,13 +426,13 @@ serve:
             # - Windows Command Line (CMD):
             #    > set SERVE_TLS_KEY_BASE64=<value>
             #
-            base64: 0RY1SAWsmLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tXG5NSUlEWlRDQ0FrMmdBd0lCQWdJRVY1eE90REFOQmdr...
+            ## base64: 0RY1SAWsmLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tXG5NSUlEWlRDQ0FrMmdBd0lCQWdJRVY1eE90REFOQmdr...
 
         ## cert ##
         #
         # Configures the private key (pem encoded).
         #
-        cert:
+        ## cert:
             ## path ##
             #
             # Set this value using environment variables on
@@ -434,7 +441,7 @@ serve:
             # - Windows Command Line (CMD):
             #    > set SERVE_TLS_CERT_PATH=<value>
             #
-            path: /path/to/file.pem
+            ## path: /path/to/file.pem
 
         ## allow_termination_from ##
         #
@@ -446,6 +453,8 @@ serve:
         # - Windows Command Line (CMD):
         #    > set SERVE_TLS_ALLOW_TERMINATION_FROM=<value>
         #
+        # vantt/mio modified here
+        # SERVE_TLS_ALLOW_TERMINATION_FROM
         allow_termination_from:
             - 172.21.0.0/16
             - 127.0.0.1/32
@@ -477,6 +486,8 @@ serve:
 # - Windows Command Line (CMD):
 #    > set DSN=<value>
 #
+# vantt/mio modified here
+# DOCKER_ENV:  DSN
 dsn: mysql://root:root@tcp(host:123)/mysql
 
 ## webfinger ##
@@ -595,17 +606,17 @@ oidc:
     #     salt: some-random-salt
     #
     subject_identifiers:
-        ## enabled ##
+        ## supported_types ##
         #
         # A list of algorithms to enable.
         #
         # Set this value using environment variables on
         # - Linux/macOS:
-        #    $ export OIDC_SUBJECT_IDENTIFIERS_ENABLED=<value>
+        #    $ export OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=<value>
         # - Windows Command Line (CMD):
-        #    > set OIDC_SUBJECT_IDENTIFIERS_ENABLED=<value>
+        #    > set OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=<value>
         #
-        enabled:
+        supported_types:
             - public
             - pairwise
 
@@ -966,7 +977,9 @@ tracing:
         # Configures the jaeger tracing backend.
         jaeger:
             # The address of the jaeger-agent where spans should be sent to
+            # vantt/mio: will overwritten by DOCKER_ENV: TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS
             local_agent_address: 127.0.0.1:6831
+
             # The tracing header format
             propagation: jaeger
             sampling:
@@ -981,5 +994,7 @@ tracing:
                 # - rateLimiting: a constant rate (e.g. setting this to 3 will sample requests with the rate of 3 traces per second)
                 # - probabilistic: a value between 0..1
                 value: 1.0
+
                 # The address of jaeger-agent's HTTP sampling server
+                # vantt/mio: will overwritten by DOCKER_ENV: TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL
                 server_url: http://localhost:5778/sampling
