@@ -15,4 +15,7 @@ return [
     Baldinof\RoadRunnerBundle\BaldinofRoadRunnerBundle::class => ['all' => true],
     Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
     ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle::class => ['all' => true],
+    Jaeger\Symfony\JaegerBundle::class => ['all' => true],
+    Doctrine\DBAL\Jaeger\Symfony\JaegerDbalBundle::class => ['all' => true],
+
 ];

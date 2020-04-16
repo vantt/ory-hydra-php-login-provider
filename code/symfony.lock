@@ -1,4 +1,7 @@
 {
+    "apache/thrift": {
+        "version": "0.11.0"
+    },
     "api-platform/api-pack": {
         "version": "v1.2.1"
     },
@@ -27,6 +30,18 @@
         "files": [
             "config/packages/baldinof_road_runner.yaml"
         ]
+    },
+    "code-tool/doctrine-dbal-jaeger": {
+        "version": "v1.2.0"
+    },
+    "code-tool/doctrine-jaeger-symfony-bridge": {
+        "version": "v1.4.0"
+    },
+    "code-tool/jaeger-client-php": {
+        "version": "v3.2.0"
+    },
+    "code-tool/jaeger-client-symfony-bridge": {
+        "version": "v3.4.0"
     },
     "dflydev/fig-cookies": {
         "version": "v2.0.1"
@@ -107,18 +122,6 @@
     "doctrine/reflection": {
         "version": "v1.1.0"
     },
-    "easycorp/easy-log-handler": {
-        "version": "1.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.0",
-            "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
-        },
-        "files": [
-            "config/packages/dev/easy_log_handler.yaml"
-        ]
-    },
     "egulias/email-validator": {
         "version": "2.1.17"
     },
@@ -137,6 +140,18 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "knpuniversity/oauth2-client-bundle": {
+        "version": "1.20",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.20",
+            "ref": "80acc9223a205cbf5d9828fd616c82a374d281dd"
+        },
+        "files": [
+            "config/packages/knpu_oauth2_client.yaml"
+        ]
+    },
     "laminas/laminas-code": {
         "version": "3.4.1"
     },
@@ -145,6 +160,9 @@
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.1"
+    },
+    "league/oauth2-client": {
+        "version": "2.4.1"
     },
     "monolog/monolog": {
         "version": "2.0.2"
