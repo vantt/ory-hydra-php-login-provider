@@ -28,24 +28,26 @@ services:
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
     hydra-migrate:
-        image: oryd/hydra:v1.4.2-alpine
+        image: ${HYDRA_IMAGE}
+        depends_on:
+            - hydra-mysqld
         environment:
             - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
         command:
             migrate sql -e --yes
         restart: on-failure
 
-    hydra:
-        image: oryd/hydra:v1.4.2-alpine
+    hydra_admin:
+        image: ${HYDRA_IMAGE}
         depends_on:
             - hydra-migrate
-        ports:
+            - hydra-mysqld
+        #ports:
             # https://www.ory.sh/docs/hydra/production
             #- "4444:4444" # Public port
-            - "4445:4445" # Admin port
-            - "5555:5555" # Port for hydra token user
+            #- "4445:4445" # Admin port
         command:
-            serve all # --dangerous-force-http # turn off https
+            serve admin --dangerous-force-http # turn off https
         volumes:
             - ./hydra.yaml:/home/ory/.hydra
         environment:
@@ -64,8 +66,48 @@ services:
             #- TRACING_PROVIDER=jaeger
             #- TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE=const
             #- TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE=1
+            - TRACING_SERVICE_NAME="Hydra Admin"
             - TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL=http://jaeger:5778/sampling
-            - TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS=jaeger:6831
+            - TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS=172.21.0.3:6831
+
+        restart: unless-stopped
+        networks:
+            proxy: {}
+            default: {}
+
+    hydra_public:
+        image: ${HYDRA_IMAGE}
+        depends_on:
+            - hydra-migrate
+            - hydra-mysqld
+        #ports:
+            # https://www.ory.sh/docs/hydra/production
+            #- "4444:4444" # Public port - we expose through traefik
+            #- "4445:4445" # Admin port
+        command:
+            #serve all # --dangerous-force-http # turn off https
+            serve public
+        volumes:
+            - ./hydra.yaml:/home/ory/.hydra
+        environment:
+            - URLS_SELF_ISSUER=${HYDRA_ISSUE_URL}
+            - URLS_CONSENT=${IDENTITY_PROVIDER_HOST}/consent
+            - URLS_LOGIN=${IDENTITY_PROVIDER_HOST}/login
+            - URLS_LOGOUT=${IDENTITY_PROVIDER_HOST}/logout
+            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4 # - DSN=memory
+            - SECRETS_SYSTEM=youReallyNeedToChangeThis
+            - LOG_LEVEL=debug
+            - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
+            # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
+            #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
+
+            # Setup Tracer
+            #- TRACING_PROVIDER=jaeger
+            #- TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE=const
+            #- TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE=1
+            - TRACING_SERVICE_NAME="Hydra Public"
+            - TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL=http://jaeger:5778/sampling
+            - TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS=172.21.0.3:6831
 
         restart: unless-stopped
         networks:
