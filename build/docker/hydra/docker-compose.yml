@@ -86,7 +86,7 @@ services:
             #- "4445:4445" # Admin port
         command:
             #serve all # --dangerous-force-http # turn off https
-            serve public
+            serve public --dangerous-force-http
         volumes:
             - ./hydra.yaml:/home/ory/.hydra
         environment:
@@ -118,10 +118,11 @@ services:
             # xxxx.xxxx.authServer.xxxxx => authServer here is just a unique-key item for the config section
             - traefik.enable=true # expose this container through traefik
             - traefik.http.services.authServer.loadbalancer.server.port=${PUBLIC_PORT} # expose this container port 4444
+
             - traefik.http.routers.authServer.entrypoints=https # expose through https endpoint
             - traefik.http.routers.authServer.rule=Host(`sso.dev.mio`)
-            - traefik.http.routers.authServer.service=authServer # name the service as authServer
             - traefik.http.routers.authServer.tls=true
+            - traefik.http.routers.authServer.service=authServer # name the service as authServer
 
 #    consent:
 #        environment:
