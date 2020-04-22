@@ -1,14 +1,22 @@
-# symfony-roadrunner-skeleton
-Symfony project template with RoadRunner as server.
-
 # Introduction
-This project template doing fresh-setup for Symfony Web/API project running with RoadRunner (https://roadrunner.dev/), high-performance PHP application server.
-- With RoadRunner we can serve a Symfony (php) restful webservice through a small application-server developed using Golang.
-- With RoadRunner we can expose Symfony application through restful http/http2 or Grpc.
 
-# Project Init
+PHP Login Provider and Consent Provider for Ory Hydra OAuth2 Authentication Server.
+
+# Table of Content
+- [OAuth2 Research](doc/oauth2.md)
+- [Hydra Guide](doc/ory-hydra.md)
+- Project Creation
+- [Tools & References](doc/tools.md)
+
+# Deployment Concern:
+-  [Symfony Behind Proxy](https://symfony.com/doc/current/deployment/proxies.html#but-what-if-the-ip-of-my-reverse-proxy-changes-constantly)
+-  [Symfony Https](https://symfony.com/doc/master/cloud/cookbooks/https.html) 
+
+# Project Creation
+
 Belows are commands used to create this skeleton
 
+## Project Init
 composer create-project symfony/website-skeleton roadrunner
 composer require
 
@@ -16,16 +24,3 @@ composer require
 ## Run Login & Consent app
 cd build/docker/nginx
 docker-compose up
-
-
-# References:
-### About Ory Hydra
-- https://github.com/ory/hydra-login-consent-node
-- https://www.ory.sh/docs/hydra/implementing-consent
-- https://www.ory.sh/docs/hydra/5min-tutorial
-
-- https://oauth2.thephpleague.com/
-
-### About RoadRunner
-- https://github.com/baldinof/roadrunner-bundle
-- https://github.com/MarkusCooks/php-roadrunner
