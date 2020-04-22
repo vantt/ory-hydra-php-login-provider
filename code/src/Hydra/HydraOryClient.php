@@ -22,6 +22,8 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 
+use GuzzleHttp\Client;
+
 class HydraOryClient implements HydraClientInterface {
     /**
      * @var string
@@ -365,6 +367,11 @@ class HydraOryClient implements HydraClientInterface {
         $config = Configuration::getDefaultConfiguration()
                                ->setHost($this->hydraEndPoint);
 
-        return new AdminApi(null, $config);
+        // use for hydra tls-termination
+        // since we connect http directly to hydra:4445 but hydra working in a tls-termination mode
+        // so we must add X-Forwarded-Proto header or hydra will disconnect
+        $client = new Client(['headers' => ['X-Forwarded-Proto' => 'https']]);
+
+        return new AdminApi($client, $config);
     }
 }

@@ -1,0 +1,32 @@
+knpu_oauth2_client:
+    # can be set to the service id of a service that implements Guzzle\ClientInterface
+    http_client: eight_points_guzzle.client.oauth
+
+    # options to configure the default http client
+    # http_client_options:
+    #     timeout: 0
+    #     proxy: null
+    #     Use only with proxy option set
+    #     verify: false
+
+    clients:
+        # configure your clients as described here: https://github.com/knpuniversity/oauth2-client-bundle#configuration
+        # will create service: "knpu.oauth2.client.ory_hydra"
+        # an instance of: KnpU\OAuth2ClientBundle\Client\OAuth2Client
+        ory_hydra:
+            type: generic
+            provider_class: App\OAuthClient\OryHydraProvider
+
+            # optional: a class that extends OAuth2Client
+            client_class: App\OAuthClient\HydraOAuth2Client
+
+            # optional: if your provider has custom constructor options
+            provider_options:
+                baseUrl: https://sso.dev.mio
+                isPKCE: false
+
+            # now, all the normal options!
+            client_id: 'theleague'
+            client_secret: 'some-secret'
+            redirect_route: connect_hydra_check
+            redirect_params: {}
