@@ -56,7 +56,7 @@ class LoginController extends AbstractController {
         $hydraException = null;
         $login          = null;
 
-        dump('before fetch login');
+        //dump('before fetch login');
         try {
             $login = $this->fetchLogin($request);
 
@@ -70,8 +70,8 @@ class LoginController extends AbstractController {
 
             /** @var LoginFormDTO $formData */
             if ($formData && $isUserValid) {
-                dump('user check valid');
-                dump('doing accept Login');
+                //dump('user check valid');
+                //dump('doing accept Login');
 
                 $response = $login->acceptLoginRequest($formData->getUsername(), $formData->isRemember(), 3600);
 
@@ -119,7 +119,7 @@ class LoginController extends AbstractController {
             assert($data instanceof LoginFormDTO);
 
             try {
-                dump('before user validation');
+                //dump('before user validation');
                 $isUserValid = $this->identityProvider->verify([
                                                                  'username' => $data->getUsername(),
                                                                  'password' => $data->getPassword(),
@@ -127,16 +127,16 @@ class LoginController extends AbstractController {
                 );
 
                 if (!$isUserValid) {
-                    dump('user is not valid');
+                    //dump('user is not valid');
                     $form->addError(new FormError('Credentials are not matched.'));
                 }
             } catch (UserNotFoundException $e) {
-                dump('user is not found');
+                //dump('user is not found');
                 $form->addError(new FormError('There is something wrong.', null, [], null, 'UserNotFound'));
             }
         }
 
-        dump('out of form handling');
+        //dump('out of form handling');
 
         return [$form, $isUserValid, $data];
     }

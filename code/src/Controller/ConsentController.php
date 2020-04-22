@@ -54,13 +54,13 @@ class ConsentController extends AbstractController {
         $hydraException = null;
         $consent        = null;
 
-        dump('before fetch consent');
+        //dump('before fetch consent');
 
         try {
             $consent = $this->fetchConsent($request);
 
             if ($consent->isSkip()) {
-                dump('skip login, before accept login');
+                //dump('skip login, before accept login');
                 $response = $consent->acceptConsentRequest();
                 return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
             }
@@ -83,7 +83,7 @@ class ConsentController extends AbstractController {
             }
 
             $client = $consent->getConsentRequest()->getClient();
-dump($client);
+
             return $this->render('security/consent.html.twig',
                                  [
                                    'form'    => $form->createView(),
