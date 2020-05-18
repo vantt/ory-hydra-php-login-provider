@@ -36,7 +36,8 @@
         "symfony/twig-pack": "*",
         "symfony/validator": "5.0.*",
         "symfony/web-link": "5.0.*",
-        "symfony/yaml": "5.0.*"
+        "symfony/yaml": "5.0.*",
+        "vantt/oauth2-hydra-php": "dev-master"
     },
     "require-dev": {
         "league/oauth2-client": "^2.4",

@@ -646,6 +646,9 @@
     "twig/twig": {
         "version": "v3.0.3"
     },
+    "vantt/oauth2-hydra-php": {
+        "version": "dev-master"
+    },
     "webimpress/safe-writer": {
         "version": "2.0.0"
     },

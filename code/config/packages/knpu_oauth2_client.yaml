@@ -15,15 +15,15 @@ knpu_oauth2_client:
         # an instance of: KnpU\OAuth2ClientBundle\Client\OAuth2Client
         ory_hydra:
             type: generic
-            provider_class: App\OAuthClient\OryHydraProvider
-
-            # optional: a class that extends OAuth2Client
-            client_class: App\OAuthClient\HydraOAuth2Client
+            provider_class: Vantt\OAuth2\Client\Provider\OryHydraProvider
 
             # optional: if your provider has custom constructor options
             provider_options:
                 baseUrl: https://sso.dev.mio
                 isPKCE: false
+
+            # optional: a class that extends OAuth2Client
+            client_class: App\OAuthClient\HydraOAuth2Client
 
             # now, all the normal options!
             client_id: 'theleague'

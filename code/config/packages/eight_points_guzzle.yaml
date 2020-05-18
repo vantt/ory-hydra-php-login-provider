@@ -16,7 +16,7 @@ eight_points_guzzle:
                 http_errors: true
 
                 #
-                # verify: false
+                verify: false
 
                 # each key is the name of a header, and each value is a string or array of strings representing the
                 # header field values.
