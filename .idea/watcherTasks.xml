@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectTasksOptions">
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="run spec/$FilePathRelativeToSourcepath$ --ansi" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="fileExtension" value="php" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="PhpSpec" />
+      <option name="output" value="" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="$PROJECT_DIR$/tool/phpspec" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="PhpSpec" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$PROJECT_DIR$/code" />
+      <envs />
+    </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--colors=always tests/$FilePathRelativeToSourcepath$" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="fileExtension" value="php" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="PhpUnit" />
+      <option name="output" value="" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="$PROJECT_DIR$/tool/phpunit" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="PhpUnit" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$PROJECT_DIR$/code" />
+      <envs />
+    </TaskOptions>
+  </component>
+</project>

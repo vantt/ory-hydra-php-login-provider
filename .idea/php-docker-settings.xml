@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpDockerContainerSettings">
+    <list>
+      <map>
+        <entry key="50ee54c2-c468-48f6-b802-4e26e4ae8fde">
+          <value>
+            <DockerContainerSettings>
+              <option name="version" value="1" />
+              <option name="volumeBindings">
+                <list>
+                  <DockerVolumeBindingImpl>
+                    <option name="containerPath" value="/opt/project" />
+                    <option name="hostPath" value="$PROJECT_DIR$" />
+                  </DockerVolumeBindingImpl>
+                </list>
+              </option>
+            </DockerContainerSettings>
+          </value>
+        </entry>
+        <entry key="9881d050-5034-4bb5-9671-34da19d3d242">
+          <value>
+            <DockerContainerSettings>
+              <option name="version" value="1" />
+              <option name="volumeBindings">
+                <list>
+                  <DockerVolumeBindingImpl>
+                    <option name="containerPath" value="/app" />
+                    <option name="hostPath" value="$PROJECT_DIR$/code" />
+                  </DockerVolumeBindingImpl>
+                </list>
+              </option>
+            </DockerContainerSettings>
+          </value>
+        </entry>
+        <entry key="c496ebb5-67c9-4f9b-9c8b-6b8a5ee7aa88">
+          <value>
+            <DockerContainerSettings>
+              <option name="version" value="1" />
+              <option name="volumeBindings">
+                <list>
+                  <DockerVolumeBindingImpl>
+                    <option name="containerPath" value="/app" />
+                    <option name="hostPath" value="$PROJECT_DIR$/code" />
+                  </DockerVolumeBindingImpl>
+                </list>
+              </option>
+            </DockerContainerSettings>
+          </value>
+        </entry>
+        <entry key="db232671-ad5d-4d0b-ac7a-a215911ff530">
+          <value>
+            <DockerContainerSettings>
+              <option name="envVars">
+                <list>
+                  <DockerEnvVarImpl>
+                    <option name="name" value=" CACHE_FOLDER" />
+                    <option name="value" value="$USER_HOME$/.composer" />
+                  </DockerEnvVarImpl>
+                </list>
+              </option>
+              <option name="version" value="1" />
+              <option name="volumeBindings">
+                <list>
+                  <DockerVolumeBindingImpl>
+                    <option name="containerPath" value="/app" />
+                    <option name="hostPath" value="$PROJECT_DIR$/code" />
+                  </DockerVolumeBindingImpl>
+                </list>
+              </option>
+            </DockerContainerSettings>
+          </value>
+        </entry>
+        <entry key="eb4d961e-eb1b-4ec5-b01f-8e92ed9a118a">
+          <value>
+            <DockerContainerSettings>
+              <option name="version" value="1" />
+              <option name="volumeBindings">
+                <list>
+                  <DockerVolumeBindingImpl>
+                    <option name="containerPath" value="/app" />
+                    <option name="hostPath" value="$PROJECT_DIR$/code" />
+                  </DockerVolumeBindingImpl>
+                </list>
+              </option>
+            </DockerContainerSettings>
+          </value>
+        </entry>
+      </map>
+    </list>
+  </component>
+</project>
