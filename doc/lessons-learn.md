@@ -6,4 +6,15 @@
 
 - If Hydra run as Http with tls-termination enable, most of the case, it will be fine with the public-end point (4444) because we often expose this port through a https gateway.
   But the Administration-Endpoint (4445), often, we dont expose it, and we will connect directly to it using pure http.
-  In thise case, we must add a X-FORWARDED-PROTO:https header to simulate a proxy.  
+  In thise case, we must add a X-FORWARDED-PROTO:https header to simulate a proxy. 
+  
+### Json web token - JWT
+By default Hydra issue Opaque Access Token and ORY Oathkeeper! will forward jwt to your backend service.
+If you want to use JWT yourself, change the settings:
+
+```
+
+strategies:
+  access_token: jwt 
+
+```

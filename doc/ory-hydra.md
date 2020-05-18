@@ -190,7 +190,7 @@ docker run --rm -it --network=https-proxy \
         --token-endpoint-auth-method client_secret_post \
         --grant-types authorization_code,refresh_token,client_credentials,implicit \
         --response-types token,code,id_token \
-        --scope openid,offline,account.profile,photos.read \
+        --scope openid,offline_access,account.profile,photos.read \
         --callbacks "https://id.dev.mio/connect/hydra/check"
 
 ```
