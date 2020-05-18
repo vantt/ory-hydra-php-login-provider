@@ -502,7 +502,8 @@ webfinger:
     jwks:
         ## broadcast_keys ##
         #
-        # A list of JSON Web Keys that should be exposed at that endpoint. This is usually the public key for verifying OpenID Connect ID Tokens. However, you might want to add additional keys here as well.
+        # A list of JSON Web Keys that should be exposed at that endpoint.
+        # This is usually the public key for verifying OpenID Connect ID Tokens. However, you might want to add additional keys here as well.
         #
         # Default value: hydra.openid.id-token
         #
@@ -516,6 +517,7 @@ webfinger:
         #    > set WEBFINGER_JWKS_BROADCAST_KEYS=<value>
         #
         broadcast_keys:
+            - hydra.jwt.access-token
             - hydra.openid.id-token
 
     ## oidc_discovery ##
@@ -572,7 +574,7 @@ webfinger:
         supported_scope:
             - email
             - whatever
-            - read.photos
+            - photos.read
 
         ## userinfo_url ##
         #
@@ -642,7 +644,9 @@ oidc:
     dynamic_client_registration:
         ## default_scope ##
         #
-        # The OpenID Connect Dynamic Client Registration specification has no concept of whitelisting OAuth 2.0 Scope. If you want to expose Dynamic Client Registration, you should set the default scope enabled for newly registered clients. Keep in mind that users can overwrite this default by setting the "scope" key in the registration payload, effectively disabling the concept of whitelisted scopes.
+        # The OpenID Connect Dynamic Client Registration specification has no concept of whitelisting OAuth 2.0 Scope.
+        # If you want to expose Dynamic Client Registration, you should set the default scope enabled for newly registered clients.
+        # Keep in mind that users can overwrite this default by setting the "scope" key in the registration payload, effectively disabling the concept of whitelisted scopes.
         #
         # Examples:
         # - - openid
@@ -923,11 +927,14 @@ oauth2:
         # - Windows Command Line (CMD):
         #    > set OAUTH2_PKCE_ENFORCED=<value>
         #
+        # vantt/mio set here
         enforced: false
 
 ## secrets ##
 #
-# The secrets section configures secrets used for encryption and signing of several systems. All secrets can be rotated, for more information on this topic go to: https://www.ory.sh/docs/hydra/advanced#rotation-of-hmac-token-signing-and-database-and-cookie-encryption-keys
+# The secrets section configures secrets used for encryption and signing of several systems.
+# All secrets can be rotated, for more information on this topic go to:
+# https://www.ory.sh/docs/hydra/advanced#rotation-of-hmac-token-signing-and-database-and-cookie-encryption-keys
 #
 secrets:
     ## system ##

@@ -12,22 +12,20 @@
 
 version: '3.5'
 
-networks:
-    default:
-        driver: bridge
-    proxy:
-        external: true
-        name: https-proxy
-
 services:
     hydra:
+        command:
+          #serve all # --dangerous-force-http # turn off https
+          serve admin --dangerous-force-http # turn off https
+
+    hydra_public:
         image: ${HYDRA_IMAGE}
         #ports:
             # https://www.ory.sh/docs/hydra/production
-            #- "4444:4444" # Public port
+            #- "4444:4444" # Public port - we expose through traefik
             #- "4445:4445" # Admin port
         command:
-            serve all --dangerous-force-http # turn off https
+            serve public --dangerous-force-http
         volumes:
             - ./hydra.yaml:${HYDRA_CONFIG_PATH}
         environment:
@@ -37,7 +35,7 @@ services:
             - URLS_LOGOUT=${IDENTITY_PROVIDER_HOST}/logout
             - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4 # - DSN=memory
             - SECRETS_SYSTEM=youReallyNeedToChangeThis
-            - LOG_LEVEL=info
+            - LOG_LEVEL=debug
             - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
             # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
             #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
@@ -46,15 +44,9 @@ services:
             #- TRACING_PROVIDER=jaeger
             #- TRACING_PROVIDERS_JAEGER_SAMPLING_TYPE=const
             #- TRACING_PROVIDERS_JAEGER_SAMPLING_VALUE=1
-            - TRACING_SERVICE_NAME="Hydra Admin"
+            - TRACING_SERVICE_NAME="Hydra Public"
             - TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL=http://jaeger:5778/sampling
             - TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS=172.21.0.3:6831
-
-            - HTTP_PROXY=mitmproxy:8080
-            - HTTPS_PROXY=mitmproxy:8080
-
-        extra_hosts:
-            - "mitmproxy:10.254.254.254"
 
         restart: unless-stopped
         networks:
@@ -70,6 +62,7 @@ services:
             - traefik.http.routers.authServer.rule=Host(`sso.dev.mio`)
             - traefik.http.routers.authServer.tls=true
             - traefik.http.routers.authServer.service=authServer # name the service as authServer
+
 #    consent:
 #        environment:
 #            - HYDRA_ADMIN_URL=http://127.0.0.1:4445

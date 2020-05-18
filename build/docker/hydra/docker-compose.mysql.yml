@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+    hydra-mysqld:
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+    hydra-migrate:
+        image: ${HYDRA_IMAGE}
+        depends_on:
+            - hydra-mysqld
+        environment:
+            - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
+        command:
+            migrate sql -e --yes
+        restart: on-failure
