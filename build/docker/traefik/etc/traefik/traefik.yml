@@ -8,10 +8,10 @@ log:
   level: DEBUG
 
 entryPoints:
-  http:
+  http: #web
     address: :80
 
-  https:
+  https: #websecure
     address: :443
 
 # configure the Providers

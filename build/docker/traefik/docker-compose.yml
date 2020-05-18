@@ -69,9 +69,12 @@ services:
     #   - 16686:16686 # The UI port
     labels:
       - traefik.enable=true # expose this container through traefik
+
       - traefik.http.services.jaeger.loadbalancer.server.port=16686
+
       - traefik.http.routers.jaeger.entrypoints=http
       - traefik.http.routers.jaeger.rule=Host(`jaeger.dev.mio`)
-      - traefik.http.routers.jaeger.service=jaeger
       - traefik.http.routers.jaeger.tls=false
       - traefik.http.routers.jaeger.tls.certresolver=false
+
+      - traefik.http.routers.jaeger.service=jaeger

@@ -12,6 +12,6 @@ http:
 #     global-redirects:
 #       entryPoints:
 #         - http
+#       rule: HostRegexp(`{any:.+}`)
 #       middlewares:
 #         - force-https
-#       rule: HostRegexp(`{any:.+}`)
