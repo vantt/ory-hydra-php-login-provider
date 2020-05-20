@@ -2,14 +2,17 @@
 
 namespace App\Controller;
 
+use GuzzleHttp\Client;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Vantt\OAuth2\Client\Provider\OryHydraProvider;
 
 class HydraClientTestController extends AbstractController {
 
@@ -25,19 +28,53 @@ class HydraClientTestController extends AbstractController {
      */
     public function __construct(ClientRegistry $clientRegistry) {
         // on Symfony 3.3 or lower, $clientRegistry = $this->get('knpu.oauth2.registry');
+
         // key used in config/packages/knpu_oauth2_client.yaml
         $this->client = $clientRegistry->getClient('ory_hydra');
     }
 
+    /**
+     * Link to this controller to start the "connect" process
+     *
+     * @Route("/test-connect/client-credentials", name="connect_hydra_client_credentials")
+     * @see https://github.com/thephpleague/oauth2-client#client-credentials-grant
+     */
+    public function connectClientCredentials(): Response {
+        // Note: the GenericProvider requires the `urlAuthorize` option, even though
+        // it's not used in the OAuth 2.0 client credentials grant type.
+
+        $provider = new OryHydraProvider([
+                                            'baseUrl' => 'https://sso.dev.mio',
+                                            'clientId'     => 'machine',
+                                            // The client ID assigned to you by the provider
+                                            'clientSecret' => 'some-secret',
+                                         ]
+        );
+
+        $provider->setHttpClient(new Client(['verify' => false]));
+
+        try {
+            // Try to get an access token using the client credentials grant.
+            $accessToken = $provider->getAccessToken('client_credentials');
+            return new JsonResponse($accessToken);
+        } catch (IdentityProviderException $e) {
+
+            // Failed to get the access token
+            exit($e->getMessage());
+
+        }
+    }
 
     /**
      * Link to this controller to start the "connect" process
      *
-     * @Route("/connect/hydra", name="connect_hydra_start")
+     * @Route("/test-connect/authorization-code", name="connect_hydra_authorization_code")
+     *
+     * @see https://github.com/thephpleague/oauth2-client#authorization-code-grant
      */
-    public function connectAction(): Response {
+    public function connectAuthorizationCode(): Response {
         // the scopes you want to access
-        $scopes  = ['openid', 'offline', 'photos.read',];
+        $scopes  = ['photos.read', 'account.profile', 'openid', 'offline', 'offline_access'];
         $options = [];
 
         // will redirect to Hydra!
@@ -45,7 +82,22 @@ class HydraClientTestController extends AbstractController {
     }
 
     /**
-     * After going to Hydra, you're redirected back here
+     * Link to this controller to start the "connect" process
+     *
+     * @Route("/test-connect/authorization-code-pkce", name="connect_hydra_authorization_code_pkce")
+     */
+    public function connectAuthorizationCodePKCE(): Response {
+        // the scopes you want to access
+        $scopes  = ['photos.read', 'account.profile', 'openid', 'offline', 'offline_access'];
+        $options = [];
+
+        // will redirect to Hydra!
+        return $this->client->redirect($scopes, $options);
+    }
+
+
+    /**
+     * After going to Facebook, you're redirected back here
      * because this is the "redirect_route" you configured
      * in config/packages/knpu_oauth2_client.yaml
      *
@@ -54,7 +106,6 @@ class HydraClientTestController extends AbstractController {
      * @return Response
      */
     public function connectCheckAction(): Response {
-
         /** @var \KnpU\OAuth2ClientBundle\Client\Provider\FacebookClient $client */
         $client = $this->client;
 
