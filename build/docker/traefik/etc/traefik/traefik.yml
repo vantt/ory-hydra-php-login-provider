@@ -7,12 +7,20 @@
 log:
   level: DEBUG
 
+serversTransport:
+    forwardingTimeouts:
+        dialTimeout: 0s
+        responseHeaderTimeout: 0s
+
 entryPoints:
   http: #web
-    address: :80
+    address: ":80"
 
   https: #websecure
-    address: :443
+    address: ":443"
+
+  symfonyDump:
+    address: ":9912"
 
 # configure the Providers
 providers:
