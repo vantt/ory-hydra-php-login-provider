@@ -25,7 +25,6 @@
       <path value="$PROJECT_DIR$/code/vendor/symfony/psr-http-message-bridge" />
       <path value="$PROJECT_DIR$/code/vendor/symfony/polyfill-php73" />
       <path value="$PROJECT_DIR$/code/vendor/symfony/error-handler" />
-      <path value="$PROJECT_DIR$/code/vendor/zendframework/zend-diactoros" />
       <path value="$PROJECT_DIR$/code/vendor/psr/http-factory" />
       <path value="$PROJECT_DIR$/code/vendor/symfony/console" />
       <path value="$PROJECT_DIR$/code/vendor/spiral/goridge" />
@@ -106,7 +105,6 @@
       <path value="$PROJECT_DIR$/code/vendor/symfony/translation" />
       <path value="$PROJECT_DIR$/code/vendor/symfony/polyfill-intl-normalizer" />
       <path value="$PROJECT_DIR$/code/vendor/symfony/serializer" />
-      <path value="$PROJECT_DIR$/code/vendor/easycorp/easy-log-handler" />
       <path value="$PROJECT_DIR$/code/vendor/nikic/php-parser" />
       <path value="$PROJECT_DIR$/code/vendor/psr/link" />
       <path value="$PROJECT_DIR$/code/vendor/symfony/debug-pack" />
@@ -137,6 +135,18 @@
       <path value="$PROJECT_DIR$/code/vendor/guzzlehttp/guzzle" />
       <path value="$PROJECT_DIR$/code/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/code/vendor/ory/hydra-client" />
+      <path value="$PROJECT_DIR$/code/vendor/laminas/laminas-diactoros" />
+      <path value="$PROJECT_DIR$/code/vendor/eightpoints/guzzle-bundle" />
+      <path value="$PROJECT_DIR$/code/vendor/vantt/oauth2-hydra-php" />
+      <path value="$PROJECT_DIR$/code/vendor/apache/thrift" />
+      <path value="$PROJECT_DIR$/code/vendor/league/oauth2-client" />
+      <path value="$PROJECT_DIR$/code/vendor/code-tool/doctrine-dbal-jaeger" />
+      <path value="$PROJECT_DIR$/code/vendor/code-tool/jaeger-client-php" />
+      <path value="$PROJECT_DIR$/code/vendor/code-tool/jaeger-client-symfony-bridge" />
+      <path value="$PROJECT_DIR$/code/vendor/code-tool/doctrine-jaeger-symfony-bridge" />
+      <path value="$PROJECT_DIR$/code/vendor/knpuniversity/oauth2-client-bundle" />
+      <path value="$PROJECT_DIR$/code/vendor/php-webdriver/webdriver" />
+      <path value="$PROJECT_DIR$/code/vendor/symfony/panther" />
     </include_path>
   </component>
   <component name="PhpInterpreters">
@@ -342,7 +352,8 @@
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
   <component name="PhpUnit">
     <phpunit_settings>
-      <phpunit_by_interpreter interpreter_id="9881d050-5034-4bb5-9671-34da19d3d242" load_method="PHPUNIT_PHAR" custom_loader_path="/usr/local/bin/phpunit" phpunit_phar_path="/usr/local/bin/phpunit" />
+      <phpunit_by_interpreter interpreter_id="9881d050-5034-4bb5-9671-34da19d3d242" load_method="PHPUNIT_PHAR" configuration_file_path="/app/phpunit.xml" custom_loader_path="/usr/local/bin/phpunit" phpunit_phar_path="/usr/local/bin/phpunit" use_configuration_file="true" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/code/vendor/autoload.php" />
     </phpunit_settings>
   </component>
 </project>

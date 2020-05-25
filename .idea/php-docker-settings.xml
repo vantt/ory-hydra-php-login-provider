@@ -33,6 +33,22 @@
             </DockerContainerSettings>
           </value>
         </entry>
+        <entry key="a1ded894-740a-49d2-adf8-6f647cb90b3c">
+          <value>
+            <DockerContainerSettings>
+              <option name="runCliOptions" value="" />
+              <option name="version" value="1" />
+              <option name="volumeBindings">
+                <list>
+                  <DockerVolumeBindingImpl>
+                    <option name="containerPath" value="/app" />
+                    <option name="hostPath" value="$PROJECT_DIR$" />
+                  </DockerVolumeBindingImpl>
+                </list>
+              </option>
+            </DockerContainerSettings>
+          </value>
+        </entry>
         <entry key="c496ebb5-67c9-4f9b-9c8b-6b8a5ee7aa88">
           <value>
             <DockerContainerSettings>

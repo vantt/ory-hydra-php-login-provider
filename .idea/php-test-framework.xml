@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PhpTestFrameworkSettings">
-    <test_tools>
-      <tool tool_name="PHPSpec">
-        <settings>
-          <configurations>
-            <local_configuration executable_path="$PROJECT_DIR$/code/vendor/phpspec/phpspec/bin/phpspec" />
-          </configurations>
-        </settings>
+  <component name="PhpTestFrameworkVersionCache">
+    <tools_cache>
+      <tool tool_name="PHPUnit">
+        <cache>
+          <versions>
+            <info id="interpreter-9881d050-5034-4bb5-9671-34da19d3d242" version="9.0.1" />
+          </versions>
+        </cache>
       </tool>
-    </test_tools>
+    </tools_cache>
   </component>
 </project>
