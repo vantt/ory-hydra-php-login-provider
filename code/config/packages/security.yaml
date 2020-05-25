@@ -4,7 +4,7 @@ security:
         users_in_memory:
             memory:
                 users:
-                    vantt: { password: '123456' }
+                    demo: { password: '123456' }
 
         drupal7:
             # this is an Entity so we dont need a UserProvider, entity manager will handle this
