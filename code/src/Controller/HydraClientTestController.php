@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,10 +43,10 @@ class HydraClientTestController extends AbstractController {
         // it's not used in the OAuth 2.0 client credentials grant type.
 
         $provider = new OryHydraProvider([
-                                            'baseUrl' => 'https://sso.dev.mio',
-                                            'clientId'     => 'machine',
-                                            // The client ID assigned to you by the provider
-                                            'clientSecret' => 'some-secret',
+                                           'baseUrl'      => 'https://sso.dev.mio',
+                                           'clientId'     => 'machine',
+                                           // The client ID assigned to you by the provider
+                                           'clientSecret' => 'some-secret',
                                          ]
         );
 
@@ -56,12 +55,11 @@ class HydraClientTestController extends AbstractController {
         try {
             // Try to get an access token using the client credentials grant.
             $accessToken = $provider->getAccessToken('client_credentials');
+
             return new JsonResponse($accessToken);
         } catch (IdentityProviderException $e) {
-
             // Failed to get the access token
             exit($e->getMessage());
-
         }
     }
 
@@ -76,7 +74,7 @@ class HydraClientTestController extends AbstractController {
         // the scopes you want to access
         $scopes  = ['photos.read', 'account.profile', 'openid', 'offline', 'offline_access'];
         $options = [];
-
+        var_dump($scopes);
         // will redirect to Hydra!
         return $this->client->redirect($scopes, $options);
     }
@@ -101,7 +99,7 @@ class HydraClientTestController extends AbstractController {
      * because this is the "redirect_route" you configured
      * in config/packages/knpu_oauth2_client.yaml
      *
-     * @Route("/connect/hydra/check", name="connect_hydra_check", schemes={"https"})
+     * @Route("/test-connect/hydra/check", name="connect_hydra_check", schemes={"https"})
      *
      * @return Response
      */
