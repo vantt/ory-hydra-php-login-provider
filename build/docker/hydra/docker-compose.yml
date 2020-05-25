@@ -37,7 +37,7 @@ services:
             - URLS_LOGOUT=${IDENTITY_PROVIDER_HOST}/logout
             - DSN=mysql://root:${MYSQL_ROOT_PASSWORD}@tcp(hydra-mysqld:3306)/mysql?max_conns=20&max_idle_conns=4 # - DSN=memory
             - SECRETS_SYSTEM=youReallyNeedToChangeThis
-            - LOG_LEVEL=info
+            - LOG_LEVEL=debug
             - OAUTH2_EXPOSE_INTERNAL_ERRORS=1
             # - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
             #- OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
@@ -50,11 +50,11 @@ services:
             - TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL=http://jaeger:5778/sampling
             - TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS=172.21.0.3:6831
 
-            - HTTP_PROXY=mitmproxy:8080
-            - HTTPS_PROXY=mitmproxy:8080
-
-        extra_hosts:
-            - "mitmproxy:10.254.254.254"
+#            - HTTP_PROXY=mitmproxy:8080
+#            - HTTPS_PROXY=mitmproxy:8080
+#
+#        extra_hosts:
+#            - "mitmproxy:10.254.254.254"
 
         restart: unless-stopped
         networks:

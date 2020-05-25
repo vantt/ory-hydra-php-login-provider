@@ -12,21 +12,22 @@ networks:
         name: https-proxy
 
 volumes:
-    #    # this is for Native Linux (Ubuntu)
-    #    appVolume:
-    #        driver: local
-    #        driver_opts:
-    #            type: bind
-    #            device: ${PROJECT_FOLDER}
-    #            o: bind
-
-    # this is for MacOS
+    # this is for Native Linux (Ubuntu)
     appVolume:
         driver: local
         driver_opts:
-            type: nfs
-            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
-            device: ":/System/Volumes/Data/$PWD/${PROJECT_FOLDER}"
+            type: none
+            o: bind
+            device: $PWD/${PROJECT_FOLDER}
+
+
+    # this is for MacOS
+#    appVolume:
+#        driver: local
+#        driver_opts:
+#            type: nfs
+#            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+#            device: ":/System/Volumes/Data/$PWD/${PROJECT_FOLDER}"
 
 services:
     php:
@@ -76,4 +77,16 @@ services:
             - appVolume:/app
         command: "php bin/console server:dump"
         networks:
+            proxy: {}
             default: {}
+        labels:
+            # https://docs.traefik.io/reference/dynamic-configuration/docker/
+            # https://docs.traefik.io/routing/routers/#configuring-tcp-routers
+            - traefik.enable=true # expose this container through traefik
+            - traefik.tcp.services.symfonyDump.loadbalancer.server.port=9912
+
+            # tcp route
+            - traefik.tcp.routers.symfonyDump_tcp.entrypoints=symfonyDump
+            - traefik.tcp.routers.symfonyDump_tcp.rule=HostSNI(`dump.dev.mio`)
+            - traefik.tcp.routers.symfonyDump_tcp.tls=false
+            - traefik.tcp.routers.symfonyDump_tcp.service=symfonyDump

@@ -47,15 +47,15 @@ class HydraConsent {
         $session_data = [];
         $options      = [];
 
-        $options['grant_scope']                 = !empty($grant_scope) ? $grant_scope : $this->consent_request->getRequestedScope();
-        $options['grant_access_token_audience'] = $this->consent_request->getRequestedAccessTokenAudience();
+        $options['grantScope']               = !empty($grant_scope) ? $grant_scope : $this->consent_request->getRequestedScope();
+        $options['grantAccessTokenAudience'] = $this->consent_request->getRequestedAccessTokenAudience();
 
         if (null !== $remember) {
             $options['remember'] = $remember;
         }
 
         if (null !== $remember_for) {
-            $options['remember_for'] = $remember_for;
+            $options['rememberFor'] = $remember_for;
         }
 
         if (!empty($access_token_data)) {

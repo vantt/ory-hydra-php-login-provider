@@ -28,7 +28,7 @@ class ConsentController extends AbstractController {
     private $consentFactory;
 
     public function __construct(HydraConsentFactory $consentFactory) {
-        $this->consentFactory   = $consentFactory;
+        $this->consentFactory = $consentFactory;
     }
 
     /**
@@ -62,6 +62,7 @@ class ConsentController extends AbstractController {
             if ($consent->isSkip()) {
                 //dump('skip login, before accept login');
                 $response = $consent->acceptConsentRequest();
+
                 return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
             }
 
@@ -79,6 +80,7 @@ class ConsentController extends AbstractController {
                 else {
                     $response = $consent->rejectConsentRequest();
                 }
+
                 return new RedirectResponse($response->getRedirectTo(), 307); // redirect back to hydra
             }
 

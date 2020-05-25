@@ -74,14 +74,15 @@ class HydraOAuth2Client implements OAuth2ClientInterface {
         if (!empty($scopes)) {
             $options['scope'] = $scopes;
         }
-dump($options);
+
         $url = $this->provider->getAuthorizationUrl($options);
-dump($url);
+
         // set the state (unless we're stateless)
         if (!$this->isStateless()) {
             $this->getSession()->set(self::OAUTH2_SESSION_STATE_KEY, $this->provider->getState());
         }
 
+        //dump($url);
         return new RedirectResponse($url);
     }
 

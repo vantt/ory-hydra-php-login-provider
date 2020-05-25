@@ -5,12 +5,8 @@ PHP Login Provider and Consent Provider for Ory Hydra OAuth2 Authentication Serv
 # Table of Content
 - [OAuth2 Research](doc/oauth2.md)
 - [Hydra Guide](doc/ory-hydra.md)
-- Project Creation
 - [Tools & References](doc/tools.md)
 
-# Deployment Concern:
--  [Symfony Behind Proxy](https://symfony.com/doc/current/deployment/proxies.html#but-what-if-the-ip-of-my-reverse-proxy-changes-constantly)
--  [Symfony Https](https://symfony.com/doc/master/cloud/cookbooks/https.html) 
 
 # Project Creation
 
@@ -24,3 +20,5 @@ composer require
 ## Run Login & Consent app
 cd build/docker/nginx
 docker-compose up
+
+# Project Testing

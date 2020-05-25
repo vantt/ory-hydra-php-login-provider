@@ -246,7 +246,7 @@ class HydraOryClient implements HydraClientInterface {
         //  }
         //}
 
-        $request = new HydraAcceptConsentRequest();
+        $request = new HydraAcceptConsentRequest($options);
 
         if (null !== ($value = $options['session'] ?? null)) {
             $request->setSession($value);
@@ -256,11 +256,12 @@ class HydraOryClient implements HydraClientInterface {
             $request->setRemember($value);
         }
 
-        if (null !== ($value = $options['remember_for'] ?? null)) {
+        if (null !== ($value = $options['rememberFor'] ?? null)) {
             $request->setRememberFor($value);
         }
 
         /** @var HydraCompletedRequest $response */
+        //dump($request);
         $response = $this->hydraFlow('accept_consent_request', $challenge, $request);
         assert($response instanceof HydraCompletedRequest);
 

@@ -214,8 +214,6 @@ docker run --rm -it \
             
 ```
 
-
-
 ## Use Hydra ClientTest-App to test client authentication
 
 Start a client-app listen at port 9010, then expose the port 9010 to host, do authentication grant.

@@ -15,7 +15,7 @@ eight_points_guzzle:
                 # set to false to disable throwing exceptions on an HTTP protocol errors (4xx and 5xx responses)
                 http_errors: true
 
-                #
+                # disable tts verification, turn it on on production
                 verify: false
 
                 # each key is the name of a header, and each value is a string or array of strings representing the
