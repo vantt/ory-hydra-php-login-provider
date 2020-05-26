@@ -6,63 +6,82 @@ use Symfony\Component\Panther\PantherTestCase;
 use Symfony\Component\Panther\Client;
 
 class HydraClientControllerTest extends PantherTestCase {
+    const BASEURL = 'https://id.dev.mio';
 
     /**
      */
     public function test_AuthorizationCodeGrant_RedirectCorrectly() {
-        $client = static::createPantherClient();
+        $options = [
+          'external_base_uri'        => self::BASEURL,
+          'connection_timeout_in_ms' => 5000,
+          'request_timeout_in_ms'    => 120000,
+        ];
+
+        // $client = Client::createChromeClient(null, null, $options, self::BASEURL);
+        $client = static::createPantherClient($options);
         $client->followRedirects(true);
         $client->followMetaRefresh(true);
-        $crawler = $client->request('GET', '/test-connect/authorization-code');
-var_dump($crawler->getUri());
-        $uri = parse_url($crawler->getUri());
-        parse_str($uri['query'], $query);
+        $client->request('GET', '/test-connect/authorization-code');
 
-        $this->assertArrayHasKey('client_id', $query);
-        $this->assertArrayHasKey('redirect_uri', $query);
+        // Login Form
+        // "https://id.dev.mio/login?login_challenge=fb1f6d390c674526961c58696f6fc870"
+        $crawler = $client->waitFor('#login-form');
+        $url     = $client->getCurrentURL();
+        $uri     = parse_url($url);
+        parse_str($uri['query'], $query);
+        //var_dump($url);
+
+        $this->assertEquals('/login', $uri['path']);
+        $this->assertArrayHasKey('login_challenge', $query);
+
+        // submit the form which has the button [Sign in]
+        $form                   = $crawler->selectButton('Sign in')->form();
+        $form['form[username]'] = 'demo';
+        $form['form[password]'] = '123456';
+        $client->submit($form);
+
+        // Consent Form
+        // "https://id.dev.mio/consent?consent_challenge=fb1f6d390c674526961c58696f6fc870"
+        $crawler = $client->waitFor('#consent-form');
+        $url     = $client->getCurrentURL();
+        $uri     = parse_url($url);
+        $query   = null;
+        parse_str($uri['query'], $query);
+        //var_dump($url);
+
+        $this->assertEquals('/consent', $uri['path']);
+        $this->assertArrayHasKey('consent_challenge', $query);
+
+        $submitButton = $crawler->selectButton('Allow Access');
+        $form         = $submitButton->form();
+        $form['form[grant_scope]']->select(['photos.read', 'account.profile']);
+        $form['form[grant_scope]']->select(['openid']);
+        $form['form[grant_scope]']->select(['offline']);
+        $submitButton->click();
+
+        $crawler = $client->waitFor('pre');
+        $url     = $client->getCurrentURL();
+        $uri     = parse_url($url);
+        $query   = null;
+        parse_str($uri['query'], $query);
+        //var_dump($url);
+
+        $this->assertEquals('/test-connect/hydra/check', $uri['path']);
+        $this->assertArrayHasKey('code', $query);
         $this->assertArrayHasKey('state', $query);
-        $this->assertArrayHasKey('response_type', $query);
-        $this->assertArrayHasKey('approval_prompt', $query);
         $this->assertArrayHasKey('scope', $query);
+        $this->assertSame('photos.read account.profile openid offline', $query['scope']);
+
+        $data  = json_decode($crawler->getText(), true);
+        $token = $data['token'];
+        $this->assertArrayHasKey('expires', $token);
+        $this->assertArrayHasKey('access_token', $token);
+        $this->assertArrayHasKey('refresh_token', $token);
+        $this->assertArrayHasKey('id_token', $token);
+
+        $client->quit();
     }
 
-    /**
-     */
-    public function test_AuthorizationCodeGrant() {
-        $client = static::createClient();
-        $client->followRedirects(true);
-        $client->followMetaRefresh(true);
-        $crawler = $client->request('GET', '/test-connect/authorization-code');
-        $crawler = $client->request('GET', $crawler->getUri());
-
-        var_dump($crawler->getUri());
-        $uri = parse_url($crawler->getUri());
-        parse_str($uri['query'], $query);
-
-        // "https://sso.dev.mio/oauth2/auth?scope=photos.read%20account.profile%20openid%20offline%20offline_access&state=b70ad3698460feec2d7ae70008555b5e&response_type=code&approval_prompt=auto&redirect_uri=https%3A%2F%2Flocalhost%2Fconnect%2Fhydra%2Fcheck&client_id=theleague"
-        //var_dump($crawler->getUri());
-
-        //$crawler = $client->followRedirect();
-
-        //
-        //var_dump($crawler->getUri());
 
 
-        //        $crawler = $client->submitForm('Sign ', [
-        //          'form[username]' => '',
-        //          'form[password]' => '',
-        //        ]);
-        //
-        //        $response = $client->getResponse();
-        //
-        //        var_dump($crawler->getUri());
-        //
-        //        $this->assertEquals(200, $response->getStatusCode());
-        //        $data = json_decode($response->getContent(), true);
-        //
-        //        $this->assertEquals('', $data['scope']);
-        //        $this->assertEquals('bearer', $data['token_type']);
-        //        $this->assertNotEmpty($data['access_token']);
-        //        $this->assertIsInt($data['expires']);
-    }
 }

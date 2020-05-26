@@ -10,8 +10,10 @@
 
 {% block body %}
     <h1>Login!</h1>
+    <div id="login-form">
     {{ form_errors(form) }}
     {{ form(form) }}
+    </div>
 {% endblock %}
 
 {% block javascripts %}

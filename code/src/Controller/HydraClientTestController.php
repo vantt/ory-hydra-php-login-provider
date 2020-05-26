@@ -74,7 +74,7 @@ class HydraClientTestController extends AbstractController {
         // the scopes you want to access
         $scopes  = ['photos.read', 'account.profile', 'openid', 'offline', 'offline_access'];
         $options = [];
-        var_dump($scopes);
+
         // will redirect to Hydra!
         return $this->client->redirect($scopes, $options);
     }

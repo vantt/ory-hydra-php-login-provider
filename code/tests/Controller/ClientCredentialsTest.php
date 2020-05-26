@@ -2,9 +2,11 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Panther\PantherTestCase;
+use Symfony\Component\Panther\Client;
 
-class ClientCredentialsTest extends WebTestCase {
+class ClientCredentialsTest extends PantherTestCase {
+    const BASEURL = 'https://id.dev.mio';
 
     /**
      * Please creat test-user using following command
@@ -22,18 +24,30 @@ class ClientCredentialsTest extends WebTestCase {
      *
      */
     public function test_ClientCredentials() {
-        $client = static::createClient();
-        $client->followRedirects();
+        $options = [
+          'external_base_uri'        => self::BASEURL,
+          'connection_timeout_in_ms' => 5000,
+          'request_timeout_in_ms'    => 120000,
+        ];
+
+        // $client = Client::createChromeClient(null, null, $options, self::BASEURL);
+        $client = static::createPantherClient($options);
+        $client->followRedirects(true);
+        $client->followMetaRefresh(true);
         $client->request('GET', '/test-connect/client-credentials');
 
-        $response = $client->getResponse();
+        $crawler = $client->waitFor('pre');
+        $token   = json_decode($crawler->getText(), true);
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('expires', $token);
+        $this->assertArrayHasKey('access_token', $token);
+        $this->assertArrayHasKey('token_type', $token);
+        $this->assertSame('bearer', $token['token_type']);
+        $this->assertNotEmpty($token['access_token']);
+        $this->assertIsInt($token['expires']);
 
-        $this->assertEquals('', $data['scope']);
-        $this->assertEquals('bearer', $data['token_type']);
-        $this->assertNotEmpty($data['access_token']);
-        $this->assertIsInt($data['expires']);
+        var_dump($token);
+
+        $client->quit();
     }
 }

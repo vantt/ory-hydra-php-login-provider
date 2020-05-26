@@ -9,24 +9,23 @@
 {% form_theme form 'bootstrap_4_layout.html.twig' %}
 
 {% block body %}
-    {{ form_start(form) }}
+
     <h1>An Application request to access your data!</h1>
-    <div class="my-custom-class-for-errors">
-        {{ form_errors(form) }}
-    </div>
-    <P>Hi <b>{{ subject }}</b>, application <b>{{ client }}</b> wants access resources on your behalf and to:</P>
+    <div id="consent-form">
+        {{ form_start(form) }}
+        <div class="my-custom-class-for-errors">
+            {{ form_errors(form) }}
+        </div>
+        <P>Hi <b>{{ subject }}</b>, application <b>{{ client }}</b> wants access resources on your behalf and to:</P>
 
-    {{ form_row(form.grant_scope) }}
+        {{ form_row(form.grant_scope) }}
 
-    <p>Do you want to be asked next time when this application wants to access your data? The application will
-        not be able to ask for more permissions without your consent.</p>
-
+        <p>Do you want to be asked next time when this application wants to access your data? The application will
+            not be able to ask for more permissions without your consent.</p>
         {{ form_row(form.remember) }}
-
-
         {{ form_rest(form) }}
-
-    {{ form_end(form) }}
+        {{ form_end(form) }}
+    </div>
 {% endblock %}
 
 {% block javascripts %}
