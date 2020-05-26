@@ -10,14 +10,21 @@
     <php>
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
+        <server name="KERNEL_CLASS" value="App\Kernel" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
         <server name="SYMFONY_PHPUNIT_VERSION" value="7.5" />
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Project Unit-Test Suite">
+            <directory>tests/unit</directory>
+        </testsuite>
+        <testsuite name="Project Functional-Test Suite">
+            <directory>tests/function</directory>
+        </testsuite>
+        <testsuite name="Project e2e-Test Suite">
+            <directory>tests/e2e</directory>
         </testsuite>
     </testsuites>
 
@@ -30,4 +37,8 @@
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
     </listeners>
+
+    <extensions>
+        <extension class="Symfony\Component\Panther\ServerExtension" />
+    </extensions>
 </phpunit>

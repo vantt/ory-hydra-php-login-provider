@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\E2e;
 
 use Symfony\Component\Panther\PantherTestCase;
 use Symfony\Component\Panther\Client;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Security;
+namespace App\Tests\Unit;
 
 use App\Identity\Drupal7PasswordEncoder;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;

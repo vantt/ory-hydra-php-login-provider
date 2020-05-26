@@ -17,8 +17,14 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Project Unit-Test Suite">
+            <directory>tests/unit</directory>
+        </testsuite>
+        <testsuite name="Project Functional-Test Suite">
+            <directory>tests/function</directory>
+        </testsuite>
+        <testsuite name="Project e2e-Test Suite">
+            <directory>tests/e2e</directory>
         </testsuite>
     </testsuites>
 
@@ -36,3 +42,4 @@
         <extension class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
 </phpunit>
+

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Hydra;
+namespace App\Tests\Unit;
 
 use App\Hydra\HydraClientInterface;
 use App\Hydra\HydraLoginFactory;
