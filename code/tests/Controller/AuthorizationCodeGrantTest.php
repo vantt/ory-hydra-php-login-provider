@@ -5,7 +5,7 @@ namespace App\Tests\Controller;
 use Symfony\Component\Panther\PantherTestCase;
 use Symfony\Component\Panther\Client;
 
-class HydraClientControllerTest extends PantherTestCase {
+class AuthorizationCodeGrantTest extends PantherTestCase {
     const BASEURL = 'https://id.dev.mio';
 
     /**
